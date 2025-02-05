@@ -42,3 +42,5 @@ next-env.d.ts
 # Service worker
 public/sw*
 public/swe-worker*
+
+.open-next/

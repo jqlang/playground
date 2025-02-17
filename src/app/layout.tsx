@@ -4,7 +4,7 @@ import { Inter } from 'next/font/google';
 const inter = Inter({ subsets: ['latin'] });
 
 export const metadata = {
-  title: 'jqplay',
+  title: 'jq playground',
   description: 'A playground for jq',
 };
 

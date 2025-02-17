@@ -19,7 +19,7 @@
     "@mui/lab": "^6.0.0-beta.21",
     "@mui/material": "^6.3.1",
     "@prisma/client": "^6.1.0",
-    "@sentry/nextjs": "^8.47.0",
+    "@sentry/nextjs": "^9.1.0",
     "jq-wasm": "^1.0.1",
     "next": "15.1.7",
     "pg": "^8.13.0",

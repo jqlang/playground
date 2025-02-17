@@ -1,5 +1,5 @@
 import { AppBar, Toolbar, IconButton, Box, Tooltip, Typography, useMediaQuery, useTheme } from '@mui/material';
-import { Brightness4, Brightness7, ContentCopy, Help, Share, VolunteerActivism } from '@mui/icons-material';
+import { Brightness4, Brightness7, ContentCopy, GitHub, Help, Share, VolunteerActivism } from '@mui/icons-material';
 import { MouseEvent, useState } from 'react';
 import Link from 'next/link';
 import { useDarkMode } from './ThemeProvider';
@@ -88,10 +88,10 @@ const Header: React.FC<HeaderProps> = ({ onShare, onExampleClick, onCopyClick, e
                             <Share />
                         </IconButton>
                     </Tooltip>
-                    <Tooltip title="Sponsor">
-                        <IconButton color="inherit" aria-label="Sponsor">
-                            <Link href="https://github.com/sponsors/owenthereal" passHref>
-                                <VolunteerActivism />
+                    <Tooltip title="Source">
+                        <IconButton color="inherit" aria-label="Source">
+                            <Link href="https://github.com/jqlang/playground" passHref target='_blank'>
+                                <GitHub />
                             </Link>
                         </IconButton>
                     </Tooltip>

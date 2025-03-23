@@ -2,8 +2,9 @@ import { HttpType } from './model';
 
 export const worker = {
     async jq(json: string, query: string, options?: Array<string> | null): Promise<string> {
-        const jq = await import('jq-wasm');
-        return jq.raw(json, query, options ?? undefined);
+        const jqModule = await import("jq-wasm");
+        const { stdout, stderr } = await jqModule.raw(json, query, options ?? undefined);
+        return stdout + (stderr ? (stdout.length ? "\n" + stderr : stderr) : "");
     },
 
     async http(

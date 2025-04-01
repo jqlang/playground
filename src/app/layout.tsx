@@ -25,7 +25,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
         <link rel="shortcut icon" href="/favicon.ico" />
         <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
-        <meta name="apple-mobile-web-app-title" content="JQ" />
+        <meta name="apple-mobile-web-app-title" content="jq playground" />
         <link rel="manifest" href="/site.webmanifest" />
       </head>
       <body className={inter.className}>

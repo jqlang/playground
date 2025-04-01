@@ -1,5 +1,11 @@
 import { withSentryConfig } from '@sentry/nextjs';
 import MonacoWebpackPlugin from 'monaco-editor-webpack-plugin';
+import withSerwistInit from "@serwist/next";
+
+const withSerwist = withSerwistInit({
+    swSrc: "src/app/sw.ts",
+    swDest: "public/sw.js",
+});
 
 /** @type {import('next').NextConfig} */
 const nextConfig = {
@@ -24,7 +30,7 @@ const nextConfig = {
     },
 };
 
-export default withSentryConfig(nextConfig, {
+export default withSerwist(withSentryConfig(nextConfig, {
     // For all available options, see:
     // https://github.com/getsentry/sentry-webpack-plugin#options
 
@@ -57,4 +63,4 @@ export default withSentryConfig(nextConfig, {
     // https://docs.sentry.io/product/crons/
     // https://vercel.com/docs/cron-jobs
     automaticVercelMonitors: true,
-});
+}));

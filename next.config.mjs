@@ -5,6 +5,7 @@ import withSerwistInit from "@serwist/next";
 const withSerwist = withSerwistInit({
     swSrc: "src/app/sw.ts",
     swDest: "public/sw.js",
+    maximumFileSizeToCacheInBytes: 5 * 1024 * 1024, // bump to 5MB to include the jq-wasm files
 });
 
 /** @type {import('next').NextConfig} */

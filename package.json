@@ -40,7 +40,7 @@
     "comlink": "^4.4.1",
     "eslint": "^9",
     "eslint-config-next": "15.1.7",
-    "monaco-editor": "^0.50.0",
+    "monaco-editor": "^0.52.2",
     "monaco-editor-webpack-plugin": "^7.1.0",
     "postcss": "^8",
     "serwist": "^9.0.12",

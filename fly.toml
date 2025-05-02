@@ -17,7 +17,7 @@ processes = ['app']
 
 [[vm]]
 size = 'shared-cpu-1x'
-memory = 512
+memory = 256
 
 [[http_service.checks]]
 grace_period = "5s"

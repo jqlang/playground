@@ -38,7 +38,7 @@ export default async function Page({ searchParams }: PageProps): Promise<JSX.Ele
         notification = {
             message,
             messageId: generateMessageId(),
-            serverity: 'error',
+            severity: 'error',
         };
 
         console.error(`Failed to parse snippet: ${error.message}`);

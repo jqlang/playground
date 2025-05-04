@@ -4,20 +4,32 @@ import { ZodError } from 'zod';
 import { Snippet } from '@/workers/model';
 import * as Sentry from '@sentry/node';
 
-export async function POST(req: Request) {
+export interface CreateSnippetResponse {
+    slug?: string;
+    errors?: string[];
+}
+
+export async function POST(req: Request): Promise<NextResponse<CreateSnippetResponse>> {
     try {
+        // Parse the request body
         const json = await req.json();
         const snippet = Snippet.parse(json);
-        const newSnippet = await UpsertSnippet(snippet);
 
+        // Upsert the snippet and return the slug
+        const newSnippet = await UpsertSnippet(snippet);
         return NextResponse.json({ slug: newSnippet.slug }, { status: 200 });
-    } catch (error: any) {
-        console.error(`Failed to save snippet: ${error.message}`);
+    } catch (error: unknown) {
+        // Log the error and capture it in Sentry
+        console.error(`Failed to save snippet: ${error instanceof Error ? error.message : String(error)}`);
         Sentry.captureException(error, { extra: { body: req.body } });
 
+        // Handle Zod validation errors
         if (error instanceof ZodError) {
-            return NextResponse.json({ errors: error.errors }, { status: 422 });
+            const errorMessages = error.errors.map(e => e.message);
+            return NextResponse.json({ errors: errorMessages }, { status: 422 });
         }
-        return NextResponse.json({ error: 'Failed to save snippet' }, { status: 500 });
+
+        // Handle unexpected errors
+        return NextResponse.json({ errors: ['An unexpected error occurred while saving the snippet.'] }, { status: 500 });
     }
 }

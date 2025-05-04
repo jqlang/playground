@@ -4,10 +4,10 @@ import { Snackbar, Alert } from '@mui/material';
 export interface NotificationProps {
     message?: string;
     messageId?: string;
-    serverity?: 'error' | 'warning' | 'info' | 'success';
+    severity?: 'error' | 'warning' | 'info' | 'success';
 }
 
-export const Notification: React.FC<NotificationProps> = ({ message, messageId, serverity }) => {
+export const Notification: React.FC<NotificationProps> = ({ message, messageId, severity }) => {
     const [snackbarOpen, setSnackbarOpen] = useState<boolean>(false);
 
     useEffect(() => {
@@ -25,7 +25,7 @@ export const Notification: React.FC<NotificationProps> = ({ message, messageId, 
 
     return (
         <Snackbar open={snackbarOpen} autoHideDuration={6000} onClose={handleClose}>
-            <Alert onClose={handleClose} severity={serverity || 'info'} sx={{ width: '100%' }}>
+            <Alert onClose={handleClose} severity={severity || 'info'} sx={{ width: '100%' }}>
                 {message}
             </Alert>
         </Snackbar>

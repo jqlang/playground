@@ -14,6 +14,7 @@ import { JQWorker } from '@/workers';
 import { useRouter } from 'next/navigation';
 import { HttpMethodType, HttpType, Snippet, SnippetType, OptionsType, Options } from '@/workers/model';
 import { ZodError } from 'zod';
+import { CreateSnippetResponse } from '@/app/api/snippets/route';
 
 const runTimeout = 30000;
 
@@ -185,24 +186,40 @@ function PlaygroundElement({ input, initialNotification }: PlaygroundProps) {
 
     const handleShare = useCallback(async () => {
         if ((!json && !http) || !query) {
-            setNotification({ message: 'Please provide a Query and either JSON or HTTP data.', messageId: generateMessageId(), serverity: 'error' });
+            setNotification({
+                message: 'Please provide a Query and either JSON or HTTP data.',
+                messageId: generateMessageId(),
+                serverity: 'error',
+            });
             return;
         }
 
         try {
-            const body = { json: json, http: http, query: query, options: options }
+            const body: SnippetType = { json, http, query, options };
             const response = await fetch('/api/snippets', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(body),
             });
 
-            const data = await response.json();
-            if (!response.ok) throw new Error(data.errors ? data.errors.join(', ') : response.statusText);
+            const data: CreateSnippetResponse = await response.json();
 
-            router.push(`/s/${data.slug}`);
+            if (!response.ok) {
+                const errorMessage = data.errors?.join(', ') || response.statusText;
+                throw new Error(errorMessage);
+            }
+
+            if (data.slug) {
+                router.push(`/s/${data.slug}`);
+            } else {
+                throw new Error('Unexpected response: Missing slug');
+            }
         } catch (error: any) {
-            setNotification({ message: error.message, messageId: generateMessageId(), serverity: 'error' });
+            setNotification({
+                message: error.message || 'An unexpected error occurred.',
+                messageId: generateMessageId(),
+                serverity: 'error',
+            });
         }
     }, [json, http, query, options, router]);
 

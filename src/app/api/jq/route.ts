@@ -1,6 +1,6 @@
 import * as jq from 'jq-wasm';
 
-export async function GET(req: Request) {
+export async function GET(_: Request) {
     try {
         const { stdout, stderr } = await jq.raw('{"foo":"bar"}', ".");
         const result = stdout + (stderr ? (stdout.length ? "\n" + stderr : stderr) : "");

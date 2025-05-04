@@ -26,7 +26,7 @@
     "pg": "^8.13.3",
     "prisma": "^6.5.0",
     "react": "^18",
-    "react-dom": "^18",
+    "react-dom": "^19",
     "uuid": "^11.1.0",
     "zod": "^3.23.8"
   },
@@ -35,7 +35,7 @@
     "@types/node": "^22",
     "@types/pg": "^8.11.11",
     "@types/react": "^18",
-    "@types/react-dom": "^18",
+    "@types/react-dom": "^19",
     "@types/uuid": "^9.0.8",
     "comlink": "^4.4.1",
     "eslint": "^9",

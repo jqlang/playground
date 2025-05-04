@@ -1,6 +1,7 @@
 import { withSentryConfig } from '@sentry/nextjs';
 import MonacoWebpackPlugin from 'monaco-editor-webpack-plugin';
 import withSerwistInit from "@serwist/next";
+import { initOpenNextCloudflareForDev } from "@opennextjs/cloudflare";
 
 const withSerwist = withSerwistInit({
     swSrc: "src/app/sw.ts",
@@ -65,3 +66,5 @@ export default withSerwist(withSentryConfig(nextConfig, {
     // https://vercel.com/docs/cron-jobs
     automaticVercelMonitors: true,
 }));
+
+initOpenNextCloudflareForDev();

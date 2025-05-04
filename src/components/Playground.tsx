@@ -189,7 +189,7 @@ function PlaygroundElement({ input, initialNotification }: PlaygroundProps) {
             setNotification({
                 message: 'Please provide a Query and either JSON or HTTP data.',
                 messageId: generateMessageId(),
-                serverity: 'error',
+                severity: 'error',
             });
             return;
         }
@@ -218,7 +218,7 @@ function PlaygroundElement({ input, initialNotification }: PlaygroundProps) {
             setNotification({
                 message: error.message || 'An unexpected error occurred.',
                 messageId: generateMessageId(),
-                serverity: 'error',
+                severity: 'error',
             });
         }
     }, [json, http, query, options, router]);
@@ -231,8 +231,8 @@ function PlaygroundElement({ input, initialNotification }: PlaygroundProps) {
 
     const onCopyClick = useCallback(() => {
         navigator.clipboard.writeText(`jq ${options.join(' ')} '${query}'`)
-            .then(() => setNotification({ message: 'Copied command', messageId: generateMessageId(), serverity: 'success' }))
-            .catch(error => setNotification({ message: error.message, messageId: generateMessageId(), serverity: 'error' }));
+            .then(() => setNotification({ message: 'Copied command', messageId: generateMessageId(), severity: 'success' }))
+            .catch(error => setNotification({ message: error.message, messageId: generateMessageId(), severity: 'error' }));
     }, [query, options]);
 
     return (
@@ -300,7 +300,7 @@ function PlaygroundElement({ input, initialNotification }: PlaygroundProps) {
                         &nbsp;on GitHub.
                     </Typography>
                 </Box>
-                <Notification message={notification?.message} messageId={notification?.messageId} serverity={notification?.serverity} />
+                <Notification message={notification?.message} messageId={notification?.messageId} severity={notification?.severity} />
             </Container>
         </Box>
     );

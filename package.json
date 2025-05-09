@@ -18,7 +18,7 @@
     "@mui/icons-material": "^6.4.4",
     "@mui/lab": "^6.0.0-beta.21",
     "@mui/material": "^6.4.8",
-    "@prisma/client": "^6.5.0",
+    "@prisma/client": "^6.7.0",
     "@sentry/nextjs": "^9.17.0",
     "@sentry/node": "^9.17.0",
     "@serwist/next": "^9.0.12",

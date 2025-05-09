@@ -41,3 +41,5 @@ function getColorScheme() {
 
   return 'light';
 }
+
+export const onRouterTransitionStart = Sentry.captureRouterTransitionStart;

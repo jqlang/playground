@@ -7,7 +7,7 @@ interface QueryEditorProps {
 
 const QueryEditor: React.FC<QueryEditorProps> = ({ value, handleChange }) => {
   return (
-    <EditorWrapper title="Query" language="plaintext" value={value} handleChange={handleChange} />
+    <EditorWrapper title="Query" language="" value={value} handleChange={handleChange} />
   );
 }
 

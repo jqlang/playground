@@ -21,7 +21,7 @@ const nextConfig = {
         if (!isServer) {
             config.plugins.push(
                 new MonacoWebpackPlugin({
-                    languages: ['json', 'plaintext'],
+                    languages: ['json'],
                     filename: 'static/[name].worker.js', // Make sure this matches the output path in Next.js
                 })
             );

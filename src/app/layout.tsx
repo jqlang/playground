@@ -1,6 +1,8 @@
 import { Metadata } from 'next';
 import './globals.css';
 import { Inter } from 'next/font/google';
+import { removeAllServiceWorkers } from '@/lib/removeAllServiceWorkers';
+import ServiceWorkerCleanup from '@/components/ServiceWorkerCleanup';
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -29,7 +31,9 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <link rel="manifest" href="/site.webmanifest" />
       </head>
       <body className={inter.className}>
-        {children}
+        <ServiceWorkerCleanup>
+          {children}
+        </ServiceWorkerCleanup>
       </body>
     </html>
   );

@@ -20,9 +20,6 @@
     "isolatedModules": true,
     "jsx": "preserve",
     "incremental": true,
-    "types": [
-      "@serwist/next/typings"
-    ],
     "paths": {
       "@/*": [
         "./src/*"

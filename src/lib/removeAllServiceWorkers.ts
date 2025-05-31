@@ -10,12 +10,58 @@ const isServiceWorkerRelated = (name: string): boolean => {
         name.includes('routing');
 };
 
+// Function to wait for service workers to be fully unregistered
+const waitForServiceWorkerCleanup = async (timeoutMs = 5000): Promise<boolean> => {
+    return new Promise<boolean>((resolve) => {
+        const start = Date.now();
+
+        const check = async () => {
+            const registrations = await navigator.serviceWorker.getRegistrations();
+            if (registrations.length === 0) {
+                resolve(true);
+                return;
+            }
+
+            const stillRegistered = registrations.some(reg => reg.active !== undefined);
+            if (!stillRegistered) {
+                resolve(true);
+                return;
+            }
+
+            if (Date.now() - start > timeoutMs) {
+                resolve(false);
+                return;
+            }
+
+            setTimeout(check, 100);
+        };
+
+        check();
+    });
+};
+
+// Function to force refresh the page with cache busting
+const forceRefreshWithCacheBust = () => {
+    if ('serviceWorker' in navigator) {
+        navigator.serviceWorker.getRegistrations().then(registrations => {
+            registrations.forEach(registration => {
+                registration.unregister();
+            });
+        });
+    }
+
+    // Reload the page, bypassing the cache
+    window.location.reload();
+};
+
 export const removeAllServiceWorkers = async (): Promise<void> => {
     // Check if we're in a browser environment
     if (typeof window === 'undefined' || !('serviceWorker' in navigator)) {
         console.log('Service workers not supported or not in browser environment');
         return;
     }
+
+    let hadServiceWorkers = false;
 
     try {
         console.log('Removing all service workers...');
@@ -33,6 +79,7 @@ export const removeAllServiceWorkers = async (): Promise<void> => {
         if (registrations.length === 0) {
             console.log('No service workers found');
         } else {
+            hadServiceWorkers = true;
             console.log(`Found ${registrations.length} service worker(s) to remove`);
 
             // Unregister all of them
@@ -62,6 +109,14 @@ export const removeAllServiceWorkers = async (): Promise<void> => {
                         }
                     );
                 });
+            }
+
+            // Wait for service workers to be fully unregistered
+            console.log('Waiting for service workers to be fully unregistered...');
+            const cleanupSuccess = await waitForServiceWorkerCleanup();
+
+            if (!cleanupSuccess) {
+                console.warn('Service workers may not be fully unregistered yet');
             }
 
             // Add registrationInfo to successful cleanup breadcrumb
@@ -250,9 +305,20 @@ export const removeAllServiceWorkers = async (): Promise<void> => {
             data: {
                 serviceWorkersRemoved: registrations.length,
                 registrationInfo: registrations.length > 0 ? registrationInfo : [],
-                timestamp: new Date().toISOString()
+                timestamp: new Date().toISOString(),
+                hadServiceWorkers
             }
         });
+
+        // Only refresh if we had service workers - they're the main issue
+        if (hadServiceWorkers) {
+            console.log('🔄 Refreshing page to load fresh content after service worker removal...');
+
+            // Add a small delay to ensure cleanup is complete
+            setTimeout(() => {
+                forceRefreshWithCacheBust();
+            }, 500);
+        }
 
     } catch (error: unknown) {
         console.error('❌ Failed to remove service workers:', error);
@@ -269,9 +335,18 @@ export const removeAllServiceWorkers = async (): Promise<void> => {
                 cacheSupport: typeof window !== 'undefined' && 'caches' in window,
                 indexedDBSupport: typeof window !== 'undefined' && 'indexedDB' in window,
                 timestamp: new Date().toISOString(),
-                url: typeof window !== 'undefined' ? window.location.href : 'unknown'
+                url: typeof window !== 'undefined' ? window.location.href : 'unknown',
+                hadServiceWorkers
             },
             level: 'error'
         });
+
+        // Even if there was an error, try to refresh if we detected service workers
+        if (hadServiceWorkers) {
+            console.log('🔄 Refreshing page despite errors to attempt fresh content load...');
+            setTimeout(() => {
+                forceRefreshWithCacheBust();
+            }, 1000);
+        }
     }
 };

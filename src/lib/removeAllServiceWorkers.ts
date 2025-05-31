@@ -1,5 +1,15 @@
 import * as Sentry from '@sentry/nextjs';
 
+// Helper function to check if a key/name is service worker related
+const isServiceWorkerRelated = (name: string): boolean => {
+    return name.includes('serwist') ||
+        name.includes('workbox') ||
+        name.includes('sw-') ||
+        name.includes('service-worker') ||
+        name.includes('precache') ||
+        name.includes('routing');
+};
+
 export const removeAllServiceWorkers = async (): Promise<void> => {
     // Check if we're in a browser environment
     if (typeof window === 'undefined' || !('serviceWorker' in navigator)) {
@@ -13,17 +23,17 @@ export const removeAllServiceWorkers = async (): Promise<void> => {
         // Get all service worker registrations
         const registrations = await navigator.serviceWorker.getRegistrations();
 
+        // Track registrations for Sentry context
+        const registrationInfo = registrations.map(reg => ({
+            scope: reg.scope,
+            state: reg.active?.state,
+            scriptURL: reg.active?.scriptURL
+        }));
+
         if (registrations.length === 0) {
             console.log('No service workers found');
         } else {
             console.log(`Found ${registrations.length} service worker(s) to remove`);
-
-            // Track registrations for Sentry context
-            const registrationInfo = registrations.map(reg => ({
-                scope: reg.scope,
-                state: reg.active?.state,
-                scriptURL: reg.active?.scriptURL
-            }));
 
             // Unregister all of them
             const unregisterResults = await Promise.allSettled(
@@ -46,12 +56,25 @@ export const removeAllServiceWorkers = async (): Promise<void> => {
                             tags: { operation: 'service-worker-unregister' },
                             extra: {
                                 scope: registrations[index].scope,
-                                error: result.status === 'rejected' ? result.reason : 'Unknown error'
+                                error: result.status === 'rejected' ? result.reason : 'Unknown error',
+                                registrationInfo: registrationInfo[index]
                             }
                         }
                     );
                 });
             }
+
+            // Add registrationInfo to successful cleanup breadcrumb
+            Sentry.addBreadcrumb({
+                message: `Successfully unregistered ${registrations.length} service worker(s)`,
+                level: 'info',
+                category: 'service-worker-cleanup',
+                data: {
+                    serviceWorkersRemoved: registrations.length,
+                    registrationInfo,
+                    timestamp: new Date().toISOString()
+                }
+            });
         }
 
         // Clear Cache API (HTTP caches)
@@ -96,14 +119,7 @@ export const removeAllServiceWorkers = async (): Promise<void> => {
 
                     // Delete databases that might be related to service workers or Serwist
                     const swRelatedDatabases = databases.filter(db =>
-                        db.name && (
-                            db.name.includes('serwist') ||
-                            db.name.includes('workbox') ||
-                            db.name.includes('sw-') ||
-                            db.name.includes('service-worker') ||
-                            db.name.includes('precache') ||
-                            db.name.includes('routing')
-                        )
+                        db.name && isServiceWorkerRelated(db.name)
                     );
 
                     if (swRelatedDatabases.length > 0) {
@@ -127,7 +143,6 @@ export const removeAllServiceWorkers = async (): Promise<void> => {
                                     };
                                     deleteRequest.onblocked = () => {
                                         console.warn(`Delete blocked for IndexedDB: ${db.name}`);
-                                        // Still resolve as the delete might succeed later
                                         resolve();
                                     };
                                 });
@@ -170,7 +185,7 @@ export const removeAllServiceWorkers = async (): Promise<void> => {
                                 };
                                 deleteRequest.onerror = () => {
                                     console.log(`DB ${dbName} didn't exist or couldn't be deleted`);
-                                    resolve(); // Don't fail for non-existent DBs
+                                    resolve();
                                 };
                                 deleteRequest.onblocked = () => {
                                     console.warn(`Delete blocked for DB: ${dbName}`);
@@ -193,12 +208,7 @@ export const removeAllServiceWorkers = async (): Promise<void> => {
         if ('localStorage' in window) {
             try {
                 const localStorageKeys = Object.keys(localStorage);
-                const swRelatedKeys = localStorageKeys.filter(key =>
-                    key.includes('serwist') ||
-                    key.includes('workbox') ||
-                    key.includes('sw-') ||
-                    key.includes('service-worker')
-                );
+                const swRelatedKeys = localStorageKeys.filter(isServiceWorkerRelated);
 
                 if (swRelatedKeys.length > 0) {
                     console.log('Clearing service worker related localStorage items:', swRelatedKeys);
@@ -216,12 +226,7 @@ export const removeAllServiceWorkers = async (): Promise<void> => {
         if ('sessionStorage' in window) {
             try {
                 const sessionStorageKeys = Object.keys(sessionStorage);
-                const swRelatedKeys = sessionStorageKeys.filter(key =>
-                    key.includes('serwist') ||
-                    key.includes('workbox') ||
-                    key.includes('sw-') ||
-                    key.includes('service-worker')
-                );
+                const swRelatedKeys = sessionStorageKeys.filter(isServiceWorkerRelated);
 
                 if (swRelatedKeys.length > 0) {
                     console.log('Clearing service worker related sessionStorage items:', swRelatedKeys);
@@ -244,6 +249,7 @@ export const removeAllServiceWorkers = async (): Promise<void> => {
             category: 'service-worker-cleanup',
             data: {
                 serviceWorkersRemoved: registrations.length,
+                registrationInfo: registrations.length > 0 ? registrationInfo : [],
                 timestamp: new Date().toISOString()
             }
         });

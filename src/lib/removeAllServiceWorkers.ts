@@ -45,7 +45,22 @@ const forceRefreshWithCacheBust = () => {
     if ('serviceWorker' in navigator) {
         navigator.serviceWorker.getRegistrations().then(registrations => {
             registrations.forEach(registration => {
-                registration.unregister();
+                registration.unregister().catch(error => {
+                    console.error('❌ Failed to unregister service worker:', error);
+                    Sentry.captureException(error, {
+                        tags: {
+                            operation: 'service-worker-unregistration',
+                            location: 'forceRefreshWithCacheBust'
+                        },
+                        extra: {
+                            userAgent: typeof navigator !== 'undefined' ? navigator.userAgent : 'unknown',
+                            serviceWorkerSupport: typeof navigator !== 'undefined' && 'serviceWorker' in navigator,
+                            timestamp: new Date().toISOString(),
+                            url: typeof window !== 'undefined' ? window.location.href : 'unknown'
+                        },
+                        level: 'error'
+                    });
+                });
             });
         });
     }

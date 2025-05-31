@@ -11,6 +11,7 @@ const Logo: React.FC = () => {
                  */
                 position: 'relative',
                 height: '1.5em',
+                width: 'auto',
                 aspectRatio: '400 / 220',
                 display: 'inline-block',
             }}

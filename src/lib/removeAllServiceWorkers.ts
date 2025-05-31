@@ -11,7 +11,7 @@ const isServiceWorkerRelated = (name: string): boolean => {
 };
 
 // Function to wait for service workers to be fully unregistered
-const waitForServiceWorkerCleanup = async (timeoutMs = 5000): Promise<boolean> => {
+const waitForServiceWorkerCleanup = async (timeoutMs = DEFAULT_TIMEOUT_MS): Promise<boolean> => {
     return new Promise<boolean>((resolve) => {
         const start = Date.now();
 

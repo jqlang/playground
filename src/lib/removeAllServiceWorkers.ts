@@ -131,7 +131,8 @@ const cleanupServiceWorkers = async (): Promise<{ removed: number; info: Service
         console.warn('Service workers may not be fully unregistered yet');
     }
 
-    return { removed: registrations.length, info: registrationInfo };
+    const successfullyUnregisteredCount = unregisterResults.filter(result => result.status === 'fulfilled').length;
+    return { removed: successfullyUnregisteredCount, info: registrationInfo };
 };
 
 // Cache cleanup

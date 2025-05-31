@@ -1,7 +1,6 @@
 import { Metadata } from 'next';
 import './globals.css';
 import { Inter } from 'next/font/google';
-import { removeAllServiceWorkers } from '@/lib/removeAllServiceWorkers';
 import ServiceWorkerCleanup from '@/components/ServiceWorkerCleanup';
 
 const inter = Inter({ subsets: ["latin"] });

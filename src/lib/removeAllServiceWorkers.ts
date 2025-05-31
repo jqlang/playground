@@ -41,32 +41,13 @@ const waitForServiceWorkerCleanup = async (timeoutMs = 5000): Promise<boolean> =
 };
 
 // Function to force refresh the page with cache busting
-const forceRefreshWithCacheBust = () => {
-    if ('serviceWorker' in navigator) {
-        navigator.serviceWorker.getRegistrations().then(registrations => {
-            registrations.forEach(registration => {
-                registration.unregister().catch(error => {
-                    console.error('❌ Failed to unregister service worker:', error);
-                    Sentry.captureException(error, {
-                        tags: {
-                            operation: 'service-worker-unregistration',
-                            location: 'forceRefreshWithCacheBust'
-                        },
-                        extra: {
-                            userAgent: typeof navigator !== 'undefined' ? navigator.userAgent : 'unknown',
-                            serviceWorkerSupport: typeof navigator !== 'undefined' && 'serviceWorker' in navigator,
-                            timestamp: new Date().toISOString(),
-                            url: typeof window !== 'undefined' ? window.location.href : 'unknown'
-                        },
-                        level: 'error'
-                    });
-                });
-            });
-        });
-    }
+const forceRefreshWithCacheBust = (): void => {
+    // Add cache-busting parameter and reload
+    const url = new URL(window.location.href);
+    url.searchParams.set('_sw_cleanup', Date.now().toString());
 
-    // Reload the page, bypassing the cache
-    window.location.reload();
+    // Use location.replace to avoid adding to history and ensure cache bypass
+    window.location.replace(url.toString());
 };
 
 export const removeAllServiceWorkers = async (): Promise<void> => {
@@ -329,7 +310,8 @@ export const removeAllServiceWorkers = async (): Promise<void> => {
         if (hadServiceWorkers) {
             console.log('🔄 Refreshing page to load fresh content after service worker removal...');
 
-            // Add a small delay to ensure cleanup is complete
+            // The cleanup is already complete at this point since we waited for it above
+            // Add a small delay to ensure any final cleanup operations are done
             setTimeout(() => {
                 forceRefreshWithCacheBust();
             }, 500);

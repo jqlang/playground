@@ -246,6 +246,12 @@ const cleanupIndexedDB = async (): Promise<number> => {
 // Storage cleanup helper
 const cleanupStorage = (storage: Storage, storageName: string): number => {
     try {
+        // Add null check for storage
+        if (!storage) {
+            console.log(`${storageName} is not available or null`);
+            return 0;
+        }
+
         const keys = Object.keys(storage);
         const swRelatedKeys = keys.filter(isServiceWorkerRelated);
 

@@ -252,12 +252,35 @@ const cleanupStorage = (storage: Storage, storageName: string): number => {
             return 0;
         }
 
-        const keys = Object.keys(storage);
+        // Test if storage is accessible by trying to access a property
+        try {
+            // This will throw SecurityError if storage is not accessible
+            storage.length;
+        } catch (securityError) {
+            console.log(`${storageName} is not accessible due to security restrictions:`, securityError);
+            return 0;
+        }
+
+        // Get keys using the proper Storage API method
+        const keys: string[] = [];
+        for (let i = 0; i < storage.length; i++) {
+            const key = storage.key(i);
+            if (key !== null) {
+                keys.push(key);
+            }
+        }
+
         const swRelatedKeys = keys.filter(isServiceWorkerRelated);
 
         if (swRelatedKeys.length > 0) {
             console.log(`Clearing service worker related ${storageName} items:`, swRelatedKeys);
-            swRelatedKeys.forEach(key => storage.removeItem(key));
+            swRelatedKeys.forEach(key => {
+                try {
+                    storage.removeItem(key);
+                } catch (removeError) {
+                    console.warn(`Failed to remove ${storageName} key '${key}':`, removeError);
+                }
+            });
         }
 
         return swRelatedKeys.length;

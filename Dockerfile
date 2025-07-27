@@ -5,8 +5,6 @@ ARG NODE_VERSION=22
 
 FROM node:${NODE_VERSION}-slim AS base
 
-LABEL fly_launch_runtime="Next.js/Prisma"
-
 # Next.js/Prisma app lives here
 WORKDIR /app
 
@@ -16,10 +14,6 @@ ENV NODE_ENV="production"
 
 # Throw-away build stage to reduce size of final image
 FROM base as build
-
-ARG NEXT_PUBLIC_SENTRY_DSN=
-ARG SENTRY_AUTH_TOKEN=
-ENV NEXT_PUBLIC_SENTRY_DSN=${NEXT_PUBLIC_SENTRY_DSN} SENTRY_AUTH_TOKEN=${SENTRY_AUTH_TOKEN}
 
 # Install packages needed to build node modules
 RUN apt-get update -qq && \

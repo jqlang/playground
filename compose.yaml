@@ -1,26 +1,25 @@
-version: '3.8'
 services:
   jqplay:
     build:
       context: .
-      dockerfile: Dockerfile.dev
+      dockerfile: Dockerfile
     container_name: jqplay
     environment:
       NODE_ENV: development
       DATABASE_URL: postgres://postgres:postgres@pg:5432/jqplay
-    command: >
-      sh -c "npx prisma migrate dev && npm run dev"
-
+      HOSTNAME: "0.0.0.0"
+      PORT: 7500
+    command: sh -c "prisma migrate dev && node server.js"
     ports:
-      - "3000:3000"
+      - "127.0.0.1:7500:7500"
+    networks:
+      - jq-network
+      - bridge
     depends_on:
       pg:
         condition: service_healthy
-    volumes:
-      - .:/app
-      - /app/node_modules
-      - /app/.next
-    restart: unless-stopped
+    # restart: unless-stopped
+
   pg:
     image: postgres:16
     container_name: pg
@@ -31,8 +30,19 @@ services:
       POSTGRES_DB: jqplay
     ports:
       - "5432:5432"
+    networks:
+      - jq-network
+    volumes:
+      - ./postgresql:/var/lib/postgresql/data
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U postgres"]
-      interval: 5s
-      timeout: 5s
+      test: ["CMD-SHELL", "pg_isready -U postgres -d jqplay"]
+      interval: 2s
       retries: 5
+      start_period: 10s
+      timeout: 10s
+
+networks:
+  jq-network:
+    internal: true
+  bridge:
+    driver: bridge

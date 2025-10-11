@@ -2,14 +2,13 @@
   "name": "jqplay",
   "version": "0.1.0",
   "private": true,
+  "type": "module",
   "scripts": {
-    "dev": "next dev",
+    "dev": "next dev -p 7500",
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
-    "postinstall": "prisma generate",
-    "setup-db": "node scripts/setup-db.js",
-    "prisma:migrate": "npm run setup-db && npx prisma migrate dev"
+    "setup-db": "node scripts/setup-db.js"
   },
   "dependencies": {
     "@emotion/react": "^11.14.0",
@@ -18,26 +17,21 @@
     "@mui/icons-material": "^6.4.4",
     "@mui/lab": "^6.0.0-beta.21",
     "@mui/material": "^6.4.8",
-    "@prisma/client": "^6.7.0",
-    "@sentry/nextjs": "^9.17.0",
-    "@sentry/node": "^9.17.0",
     "jq-wasm": "^1.1.0-jq-1.8.1",
     "next": "^15.2.4",
     "react": "^18",
     "react-dom": "^18",
-    "uuid": "^11.1.0",
-    "zod": "^3.23.8"
+    "ts-node-maintained": "^10.9.5",
+    "zod": "^4.0.0"
   },
   "devDependencies": {
     "@types/node": "^22",
     "@types/react": "^18",
-    "@types/uuid": "^9.0.8",
     "comlink": "^4.4.1",
     "eslint": "^9",
     "eslint-config-next": "15.1.7",
     "monaco-editor": "^0.50.0",
     "monaco-editor-webpack-plugin": "^7.1.0",
-    "prisma": "^6.7.0",
     "tailwindcss": "^3.4.17",
     "typescript": "^5"
   }

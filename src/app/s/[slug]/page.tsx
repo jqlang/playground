@@ -1,35 +1,36 @@
-import { Playground } from '@/components/Playground';
-import { redirect } from 'next/navigation';
-import { Snippet } from '@/workers/model';
-import { GetSnippet } from '@/lib/prisma';
-import * as Sentry from '@sentry/node';
+import { Playground } from "@/components/Playground";
+import { redirect } from "next/navigation";
+import { Snippet } from "@/workers/model";
+import { GetSnippet, validSlug } from "@/lib/database";
+import * as Sentry from "@sentry/node";
 
 interface PageProps {
-    params: Promise<{ slug: string }>;
+  params: Promise<{ slug: string }>;
 }
 
-export default async function Page({ params }: PageProps): Promise<JSX.Element | void> {
-    const slug = (await params).slug;
-    if (!slug) {
-        return redirect('/');
-    }
+export default async function Page({
+  params,
+}: PageProps): Promise<JSX.Element | void> {
+  const slug = (await params).slug;
+  if (!slug) {
+    return redirect("/");
+  }
 
-    const snippet = await GetSnippet(slug);
-    if (!snippet) {
-        redirect('/');
-    }
+  if (!validSlug.test(slug)) {
+    return redirect("/");
+  }
 
-    try {
-        const input = Snippet.parse(snippet);
-        return (
-            <Playground
-                input={input}
-            />
-        );
-    } catch (error: any) {
-        console.error(`Failed to load snippet: ${error.message}`);
-        Sentry.captureException(error, { extra: { slug } });
+  const snippet = await GetSnippet(slug);
+  if (!snippet) {
+    redirect("/");
+  }
 
-        redirect('/')
-    }
-};
+  try {
+    const input = Snippet.parse(snippet);
+    return <Playground input={input} />;
+  } catch (error: any) {
+    console.error(`Failed to load snippet: ${slug} received: ${error.message}`);
+
+    redirect("/");
+  }
+}

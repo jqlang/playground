@@ -1,5 +1,5 @@
 app = 'jqplay-next'
-primary_region = 'sea'
+primary_region = 'iad'
 
 [build]
 dockerfile = "Dockerfile"

@@ -38,3 +38,6 @@ next-env.d.ts
 
 # Sentry Config File
 .env.sentry-build-plugin
+
+# Generated Monaco editor files
+public/monaco-editor/

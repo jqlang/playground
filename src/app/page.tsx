@@ -11,7 +11,7 @@ interface PageProps {
     searchParams: Promise<Record<string, string | string[] | undefined>>;
 }
 
-export default async function Page({ searchParams }: PageProps): Promise<JSX.Element | void> {
+export default async function Page({ searchParams }: PageProps): Promise<JSX.Element> {
     let snippet: SnippetType | undefined;
     let notification: NotificationProps | undefined;
 

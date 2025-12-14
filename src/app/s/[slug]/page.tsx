@@ -8,7 +8,7 @@ interface PageProps {
     params: Promise<{ slug: string }>;
 }
 
-export default async function Page({ params }: PageProps): Promise<JSX.Element | void> {
+export default async function Page({ params }: PageProps): Promise<JSX.Element> {
     const slug = (await params).slug;
     if (!slug) {
         return redirect('/');

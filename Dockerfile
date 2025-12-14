@@ -28,13 +28,11 @@ RUN apt-get update -qq && \
 # Install node modules
 COPY --link package-lock.json package.json ./
 COPY --link prisma .
+COPY --link scripts scripts
 RUN npm ci --include=dev
 
 # Copy application code
 COPY --link . .
-
-# Copy Monaco editor files (after COPY to ensure they exist in public/)
-RUN npm run copy-monaco
 
 # Build application
 RUN npm run build

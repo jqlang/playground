@@ -38,7 +38,6 @@
     "eslint-config-next": "15.1.7",
     "monaco-editor": "^0.55.1",
     "prisma": "^6.7.0",
-    "tailwindcss": "^3.4.17",
     "typescript": "^5"
   }
 }

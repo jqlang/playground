@@ -30,6 +30,6 @@ export default async function Page({ params }: PageProps): Promise<JSX.Element> 
         console.error(`Failed to load snippet: ${error.message}`);
         Sentry.captureException(error, { extra: { slug } });
 
-        redirect('/')
+        redirect('/');
     }
-};
+}

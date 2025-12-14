@@ -55,6 +55,11 @@ const waitForServiceWorkerCleanup = async (timeoutMs = DEFAULT_TIMEOUT_MS): Prom
 
             await new Promise(resolve => setTimeout(resolve, POLLING_DELAY_MS));
         } catch (error) {
+            // Safari may throw SecurityError - this is expected behavior, not an error
+            if (error instanceof DOMException && error.name === 'SecurityError') {
+                console.log('Service worker API not accessible (SecurityError), assuming cleanup complete');
+                return true;
+            }
             console.error('Error checking service worker status:', error);
             break;
         }
@@ -80,7 +85,18 @@ const forceRefreshWithCacheBust = (): void => {
 
 // Service worker cleanup
 const cleanupServiceWorkers = async (): Promise<{ removed: number; info: ServiceWorkerInfo[] }> => {
-    const registrations = await navigator.serviceWorker.getRegistrations();
+    let registrations: readonly ServiceWorkerRegistration[];
+    try {
+        registrations = await navigator.serviceWorker.getRegistrations();
+    } catch (error) {
+        // Safari may throw SecurityError when accessing service worker APIs
+        // in certain contexts (private browsing, strict security settings)
+        if (error instanceof DOMException && error.name === 'SecurityError') {
+            console.log('Service worker API not accessible (SecurityError), skipping cleanup');
+            return { removed: 0, info: [] };
+        }
+        throw error;
+    }
 
     if (registrations.length === 0) {
         return { removed: 0, info: [] };
@@ -185,13 +201,22 @@ const cleanupIndexedDB = async (): Promise<number> => {
         let databasesToDelete: string[] = [];
 
         if ('databases' in indexedDB) {
-            const databases = await indexedDB.databases();
-            console.log('Found IndexedDB databases:', databases.map(db => db.name));
+            try {
+                const databases = await indexedDB.databases();
+                console.log('Found IndexedDB databases:', databases.map(db => db.name));
 
-            databasesToDelete = databases
-                .filter(db => db.name && isServiceWorkerRelated(db.name))
-                .map(db => db.name!)
-                .filter(Boolean);
+                databasesToDelete = databases
+                    .filter(db => db.name && isServiceWorkerRelated(db.name))
+                    .map(db => db.name!)
+                    .filter(Boolean);
+            } catch (error) {
+                // Safari may throw SecurityError when accessing indexedDB.databases()
+                if (error instanceof DOMException && error.name === 'SecurityError') {
+                    console.log('IndexedDB databases() not accessible (SecurityError), skipping');
+                    return 0;
+                }
+                throw error;
+            }
         } else {
             console.log('indexedDB.databases() not supported, using known database names');
             databasesToDelete = ['serwist-expiration', 'workbox-expiration', 'serwist-precache'];

@@ -1,7 +1,7 @@
 #!/bin/bash
 # Copy Monaco Editor files for JSON-only support
 # This script copies only the minimal files needed for JSON editing,
-# reducing the bundle from ~16MB to ~4.8MB
+# reducing the Monaco Editor files from ~16MB to ~4.8MB
 
 set -e
 

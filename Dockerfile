@@ -33,6 +33,9 @@ RUN npm ci --include=dev
 # Copy application code
 COPY --link . .
 
+# Copy Monaco editor files (after COPY to ensure they exist in public/)
+RUN npm run copy-monaco
+
 # Build application
 RUN npm run build
 

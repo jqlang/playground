@@ -1,25 +1,14 @@
 import { withSentryConfig } from '@sentry/nextjs';
-import MonacoWebpackPlugin from 'monaco-editor-webpack-plugin';
 
 /** @type {import('next').NextConfig} */
 const nextConfig = {
     output: "standalone",
-    webpack: (config, { isServer }) => {
+    webpack: (config) => {
         config.resolve.fallback = {
             fs: false,
             path: false,
             crypto: false
         };
-
-        if (!isServer) {
-            config.plugins.push(
-                new MonacoWebpackPlugin({
-                    languages: ['json', 'plaintext'],
-                    filename: 'static/[name].worker.js', // Make sure this matches the output path in Next.js
-                })
-            );
-        }
-
         return config;
     },
 };

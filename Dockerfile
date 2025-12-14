@@ -36,6 +36,9 @@ COPY --link . .
 # Build application
 RUN npm run build
 
+# Save prisma CLI before pruning dev dependencies
+RUN mkdir -p /prisma-cli && cp -r node_modules/prisma node_modules/@prisma /prisma-cli/
+
 # Remove development dependencies
 RUN npm prune --omit=dev
 
@@ -48,8 +51,9 @@ RUN apt-get update -qq && \
     apt-get install --no-install-recommends -y openssl && \
     rm -rf /var/lib/apt/lists /var/cache/apt/archives
 
-# Install Prisma CLI globally
-RUN npm install -g prisma
+# Copy prisma CLI from build stage (uses version from package.json)
+COPY --from=build /prisma-cli/prisma /app/node_modules/prisma
+COPY --from=build /prisma-cli/@prisma /app/node_modules/@prisma
 
 # Copy built application
 COPY --from=build /app/.next/standalone /app

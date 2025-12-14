@@ -5,7 +5,7 @@ primary_region = 'iad'
 dockerfile = "Dockerfile"
 
 [deploy]
-release_command = 'npx --yes prisma migrate deploy'
+release_command = 'node node_modules/prisma/build/index.js migrate deploy'
 
 [http_service]
 internal_port = 3000

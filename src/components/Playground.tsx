@@ -12,7 +12,7 @@ import { Notification, NotificationProps } from './Notification';
 import { currentUnixTimestamp, generateMessageId, normalizeLineBreaks, prettifyZodError } from '@/lib/utils';
 import { JQWorker } from '@/workers';
 import { useRouter } from 'next/navigation';
-import { HttpMethodType, HttpType, Snippet, SnippetType, OptionsType, Options } from '@/workers/model';
+import { HttpMethodType, HttpType, Snippet, SnippetType, OptionsType, Options } from '@/schemas';
 import { ZodError } from 'zod';
 import { CreateSnippetResponse } from '@/app/api/snippets/route';
 

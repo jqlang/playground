@@ -3,7 +3,7 @@ import { Suspense } from 'react';
 import { Box, CircularProgress } from '@mui/material';
 import { NotificationProps } from '@/components/Notification';
 import { generateMessageId, prettifyZodError } from '@/lib/utils';
-import { Snippet, SnippetType } from '@/workers/model';
+import { Snippet, SnippetType } from '@/schemas';
 import { ZodError } from 'zod';
 import * as Sentry from '@sentry/node';
 

@@ -3,12 +3,20 @@ import { withSentryConfig } from '@sentry/nextjs';
 /** @type {import('next').NextConfig} */
 const nextConfig = {
     output: "standalone",
-    webpack: (config) => {
+    outputFileTracingIncludes: {
+        '/app/api/jq/route': ['./src/workers/server/worker.cjs'],
+    },
+    webpack: (config, { isServer }) => {
         config.resolve.fallback = {
             fs: false,
             path: false,
             crypto: false
         };
+        // Don't bundle piscina - it needs to load workers at runtime
+        if (isServer) {
+            config.externals = config.externals || [];
+            config.externals.push('piscina');
+        }
         return config;
     },
 };

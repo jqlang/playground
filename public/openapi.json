@@ -1,0 +1,433 @@
+{
+  "openapi": "3.0.0",
+  "info": {
+    "title": "jq Playground API",
+    "version": "1.0.0",
+    "description": "Execute jq queries and share snippets"
+  },
+  "servers": [
+    {
+      "url": "http://localhost:3000/api",
+      "description": "Local development server"
+    }
+  ],
+  "components": {
+    "securitySchemes": {
+      "BearerAuth": {
+        "type": "http",
+        "scheme": "bearer",
+        "bearerFormat": "JWT"
+      }
+    },
+    "schemas": {
+      "json": {
+        "type": "object"
+      },
+      "JqRequestSchema": {
+        "type": "object",
+        "properties": {
+          "json": {
+            "type": "string",
+            "description": "JSON input to process"
+          },
+          "query": {
+            "type": "string",
+            "description": "jq query to execute"
+          },
+          "options": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/Options"
+              }
+            ],
+            "description": "jq command-line options"
+          }
+        },
+        "required": [
+          "json",
+          "query"
+        ]
+      },
+      "slug": {
+        "type": "object"
+      },
+      "Snippet": {
+        "type": "object",
+        "properties": {
+          "json": {
+            "type": "string",
+            "nullable": true
+          },
+          "http": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/HttpRequestSchema"
+              }
+            ]
+          },
+          "query": {
+            "type": "string",
+            "minLength": 1
+          },
+          "options": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/Options"
+              }
+            ]
+          }
+        },
+        "required": [
+          "query"
+        ]
+      },
+      "Option": {
+        "type": "string",
+        "enum": [
+          "-c",
+          "-n",
+          "-R",
+          "-r",
+          "-s",
+          "-S"
+        ]
+      },
+      "Options": {
+        "type": "array",
+        "items": {
+          "$ref": "#/components/schemas/Option"
+        }
+      },
+      "HttpMethodSchema": {
+        "type": "string",
+        "enum": [
+          "GET",
+          "POST",
+          "PUT",
+          "DELETE",
+          "PATCH",
+          "OPTIONS",
+          "HEAD"
+        ]
+      },
+      "HttpHeadersSchema": {
+        "type": "string"
+      },
+      "HttpUrlSchema": {
+        "type": "string",
+        "format": "uri"
+      },
+      "HttpRequestSchema": {
+        "type": "object",
+        "properties": {
+          "method": {
+            "$ref": "#/components/schemas/HttpMethodSchema"
+          },
+          "url": {
+            "$ref": "#/components/schemas/HttpUrlSchema"
+          },
+          "headers": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/HttpHeadersSchema"
+              }
+            ]
+          },
+          "body": {
+            "type": "string",
+            "nullable": true
+          }
+        },
+        "required": [
+          "method",
+          "url"
+        ]
+      }
+    },
+    "responses": {
+      "400": {
+        "description": "Bad Request",
+        "content": {
+          "application/json": {
+            "schema": {
+              "type": "object",
+              "properties": {
+                "error": {
+                  "type": "string",
+                  "example": "Invalid request parameters"
+                },
+                "code": {
+                  "type": "string",
+                  "example": "400"
+                }
+              }
+            }
+          }
+        }
+      },
+      "401": {
+        "description": "Unauthorized",
+        "content": {
+          "application/json": {
+            "schema": {
+              "type": "object",
+              "properties": {
+                "error": {
+                  "type": "string",
+                  "example": "Authentication required"
+                },
+                "code": {
+                  "type": "string",
+                  "example": "401"
+                }
+              }
+            }
+          }
+        }
+      },
+      "403": {
+        "description": "Forbidden",
+        "content": {
+          "application/json": {
+            "schema": {
+              "type": "object",
+              "properties": {
+                "error": {
+                  "type": "string",
+                  "example": "Access denied"
+                },
+                "code": {
+                  "type": "string",
+                  "example": "403"
+                }
+              }
+            }
+          }
+        }
+      },
+      "404": {
+        "description": "Not Found",
+        "content": {
+          "application/json": {
+            "schema": {
+              "type": "object",
+              "properties": {
+                "error": {
+                  "type": "string",
+                  "example": "Resource not found"
+                },
+                "code": {
+                  "type": "string",
+                  "example": "404"
+                }
+              }
+            }
+          }
+        }
+      },
+      "409": {
+        "description": "Conflict",
+        "content": {
+          "application/json": {
+            "schema": {
+              "type": "object",
+              "properties": {
+                "error": {
+                  "type": "string",
+                  "example": "Resource already exists"
+                },
+                "code": {
+                  "type": "string",
+                  "example": "409"
+                }
+              }
+            }
+          }
+        }
+      },
+      "500": {
+        "description": "Internal Server Error",
+        "content": {
+          "application/json": {
+            "schema": {
+              "type": "object",
+              "properties": {
+                "error": {
+                  "type": "string",
+                  "example": "An unexpected error occurred"
+                },
+                "code": {
+                  "type": "string",
+                  "example": "500"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "paths": {
+    "/health": {
+      "get": {
+        "operationId": "get-health",
+        "summary": "",
+        "description": "Health check endpoint",
+        "tags": [
+          "Health"
+        ],
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "Successful response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/200 - { status: string } - Service is healthy"
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/400"
+          },
+          "500": {
+            "$ref": "#/components/responses/500"
+          }
+        }
+      }
+    },
+    "/jq": {
+      "get": {
+        "operationId": "get-jq",
+        "summary": "",
+        "description": "Execute a jq query against JSON input via query parameters",
+        "tags": [
+          "Jq"
+        ],
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "Successful response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/200 - { result: string } - Query executed successfully"
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/400"
+          },
+          "500": {
+            "$ref": "#/components/responses/500"
+          }
+        }
+      },
+      "post": {
+        "operationId": "post-jq",
+        "summary": "",
+        "description": "Execute a jq query against JSON input",
+        "tags": [
+          "Jq"
+        ],
+        "parameters": [],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/JqRequestSchema"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Successful response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/200 - { result: string } - Query executed successfully"
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/400"
+          },
+          "500": {
+            "$ref": "#/components/responses/500"
+          }
+        }
+      }
+    },
+    "/snippets": {
+      "post": {
+        "operationId": "post-snippets",
+        "summary": "",
+        "description": "Create or update a snippet",
+        "tags": [
+          "Snippets"
+        ],
+        "parameters": [],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Snippet"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Successful response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/200 - { slug: string } - Snippet saved successfully"
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/400"
+          },
+          "500": {
+            "$ref": "#/components/responses/500"
+          }
+        }
+      }
+    },
+    "/snippets/{slug}": {
+      "get": {
+        "operationId": "get-snippets-{slug}",
+        "summary": "",
+        "description": "Get a snippet by slug",
+        "tags": [
+          "Snippets"
+        ],
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "Successful response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/200 - Snippet - Snippet data"
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/400"
+          },
+          "500": {
+            "$ref": "#/components/responses/500"
+          }
+        }
+      }
+    }
+  }
+}

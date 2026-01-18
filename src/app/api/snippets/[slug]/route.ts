@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server';
 import { GetSnippet } from '@/lib/prisma';
-import { Snippet } from '@/workers/model';
+import { Snippet } from '@/schemas';
 import { ZodError } from 'zod';
 import * as Sentry from '@sentry/node';
 
@@ -8,6 +8,14 @@ interface PageProps {
     params: Promise<{ slug: string }>;
 }
 
+/**
+ * @description Get a snippet by slug
+ * @pathParams slug - The unique identifier for the snippet
+ * @response 200 - Snippet - Snippet data
+ * @response 404 - { error: string } - Snippet not found
+ * @response 422 - { errors: ZodError[] } - Validation error
+ * @response 500 - { error: string } - Server error
+ */
 export async function GET(_: Request, { params }: PageProps) {
     const slug = (await params).slug;
     if (!slug) {

@@ -4,13 +4,16 @@
   "private": true,
   "scripts": {
     "dev": "next dev",
-    "build": "next build",
+    "build": "npm run openapi && next build",
     "start": "next start",
     "lint": "next lint",
+    "test": "vitest run",
+    "test:watch": "vitest",
     "postinstall": "prisma generate && npm run copy-monaco",
     "copy-monaco": "bash scripts/copy-monaco.sh",
     "setup-db": "node scripts/setup-db.js",
-    "prisma:migrate": "npm run setup-db && npx prisma migrate dev"
+    "prisma:migrate": "npm run setup-db && npx prisma migrate dev",
+    "openapi": "next-openapi-gen generate"
   },
   "dependencies": {
     "@emotion/react": "^11.14.0",
@@ -20,10 +23,13 @@
     "@mui/lab": "^6.0.0-beta.21",
     "@mui/material": "^6.4.8",
     "@prisma/client": "^6.7.0",
+    "@scalar/api-reference-react": "^0.8.27",
     "@sentry/nextjs": "^9.17.0",
     "@sentry/node": "^9.17.0",
+    "ajv": "^8.17.1",
     "jq-wasm": "^1.1.0-jq-1.8.1",
     "next": "^15.2.4",
+    "piscina": "^5.1.4",
     "react": "^18",
     "react-dom": "^18",
     "uuid": "^11.1.0",
@@ -37,7 +43,9 @@
     "eslint": "^9",
     "eslint-config-next": "15.1.7",
     "monaco-editor": "^0.55.1",
+    "next-openapi-gen": "^0.9.4",
     "prisma": "^6.7.0",
-    "typescript": "^5"
+    "typescript": "^5",
+    "vitest": "^4.0.17"
   }
 }

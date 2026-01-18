@@ -47,22 +47,22 @@ const CheatsheetDialog: React.FC<CheatsheetDialogProps> = ({ open, onClose, onEx
         <Dialog open={open} onClose={onClose} maxWidth="md" fullWidth>
             <DialogTitle sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                 Cheatsheet
-                <IconButton aria-label="close" onClick={onClose} sx={{ color: theme.palette.grey[500] }}>
+                <IconButton aria-label="close" onClick={onClose} sx={{ color: 'grey.500' }}>
                     <CloseIcon />
                 </IconButton>
             </DialogTitle>
             <DialogContent dividers>
-                <TableContainer component={Paper} sx={{ backgroundColor: theme.palette.background.default }}>
+                <TableContainer component={Paper} sx={{ bgcolor: 'background.default' }}>
                     <Table>
                         <TableHead>
                             <TableRow>
                                 <TableCell>
-                                    <Typography fontSize={theme.typography.fontSize} sx={{ fontWeight: 'bold', color: theme.palette.text.primary }}>
+                                    <Typography variant="body1" sx={{ fontWeight: 'bold', color: 'text.primary' }}>
                                         Example
                                     </Typography>
                                 </TableCell>
                                 <TableCell>
-                                    <Typography fontSize={theme.typography.fontSize} sx={{ fontWeight: 'bold', color: theme.palette.text.primary }}>
+                                    <Typography variant="body1" sx={{ fontWeight: 'bold', color: 'text.primary' }}>
                                         Description
                                     </Typography>
                                 </TableCell>
@@ -73,28 +73,27 @@ const CheatsheetDialog: React.FC<CheatsheetDialogProps> = ({ open, onClose, onEx
                                 <TableRow
                                     key={index}
                                     onClick={() => onExampleClick(row.json, row.query)}
-                                    sx={{ cursor: 'pointer', '&:hover': { backgroundColor: theme.palette.action.hover } }}
+                                    sx={{ cursor: 'pointer', '&:hover': { bgcolor: 'action.hover' } }}
                                 >
                                     <TableCell>
-                                        <Typography fontSize={theme.typography.fontSize} component="span">
-                                            <Box
-                                                component="code"
-                                                sx={{
-                                                    display: 'inline-block',
-                                                    padding: '2px 4px',
-                                                    backgroundColor: theme.palette.mode === 'dark' ? '#2d2d2d' : '#f9f2f4',
-                                                    borderRadius: '4px',
-                                                    fontFamily: 'Monaco, Menlo, "Courier New", monospace',
-                                                    fontSize: '0.875em',
-                                                    color: theme.palette.mode === 'dark' ? '#9cdcfe' : '#a31515',
-                                                }}
-                                            >
-                                                {row.query}
-                                            </Box>
-                                        </Typography>
+                                        <Box
+                                            component="code"
+                                            sx={{
+                                                display: 'inline-block',
+                                                px: 0.5,
+                                                py: 0.25,
+                                                bgcolor: theme.palette.code.background,
+                                                borderRadius: 1,
+                                                fontFamily: 'Monaco, Menlo, "Courier New", monospace',
+                                                fontSize: '0.875em',
+                                                color: theme.palette.code.text,
+                                            }}
+                                        >
+                                            {row.query}
+                                        </Box>
                                     </TableCell>
                                     <TableCell>
-                                        <Typography fontSize={theme.typography.fontSize} sx={{ color: theme.palette.text.secondary }}>
+                                        <Typography variant="body1" sx={{ color: 'text.secondary' }}>
                                             {row.description}
                                         </Typography>
                                     </TableCell>

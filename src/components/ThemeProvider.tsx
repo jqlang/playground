@@ -1,6 +1,22 @@
 import { createContext, useContext, useState, ReactNode, useEffect, FC } from 'react';
 import { ThemeProvider as MuiThemeProvider, createTheme } from '@mui/material/styles';
 
+// Extend MUI theme with custom colors
+declare module '@mui/material/styles' {
+    interface Palette {
+        code: {
+            background: string;
+            text: string;
+        };
+    }
+    interface PaletteOptions {
+        code?: {
+            background: string;
+            text: string;
+        };
+    }
+}
+
 interface ThemeContextType {
     darkMode: boolean;
 }
@@ -50,6 +66,7 @@ export const ThemeProvider: FC<ThemeProviderProps> = ({ children }) => {
             },
             background: {
                 default: darkMode ? '#1e1e1e' : '#ffffff',
+                paper: darkMode ? '#2d2d2d' : '#f5f5f5',
             },
             text: {
                 primary: darkMode ? '#d4d4d4' : '#000000',
@@ -57,6 +74,10 @@ export const ThemeProvider: FC<ThemeProviderProps> = ({ children }) => {
             },
             action: {
                 hover: darkMode ? '#333333' : '#e0e0e0',
+            },
+            code: {
+                background: darkMode ? '#2d2d2d' : '#f9f2f4',
+                text: darkMode ? '#9cdcfe' : '#a31515',
             },
         },
         typography: {

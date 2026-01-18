@@ -1,8 +1,7 @@
 import { AppBar, Toolbar, IconButton, Box, Tooltip, Typography, useMediaQuery, useTheme } from '@mui/material';
-import { Brightness4, Brightness7, ContentCopy, GitHub, Help, Share, VolunteerActivism } from '@mui/icons-material';
-import { MouseEvent, useState } from 'react';
+import { ContentCopy, GitHub, Help, Share } from '@mui/icons-material';
+import { useState } from 'react';
 import Link from 'next/link';
-import { useDarkMode } from './ThemeProvider';
 import Logo from './Logo';
 import CheatSheetDialog from './CheatSheetDialog';
 
@@ -14,20 +13,12 @@ interface HeaderProps {
 }
 
 const Header: React.FC<HeaderProps> = ({ onShare, onExampleClick, onCopyClick, enableCopyButton }) => {
-    const { darkMode } = useDarkMode();
     const [cheatsheetOpen, setCheatSheetOpen] = useState(false);
 
     const theme = useTheme();
     const isSmallScreen = useMediaQuery(theme.breakpoints.down('sm'));
 
-    const bgColor = darkMode ? '#2c3033' : '#f8f9fa';
-    const fgColor = darkMode ? '#ffffff' : '#333333';
-
-    const subtitleStyle = {
-        color: darkMode ? '#cccccc' : '#666666',
-    };
-
-    function handleCheatsheetOpen(event: MouseEvent<HTMLButtonElement>): void {
+    function handleCheatsheetOpen(): void {
         setCheatSheetOpen(true);
     }
 
@@ -46,10 +37,10 @@ const Header: React.FC<HeaderProps> = ({ onShare, onExampleClick, onCopyClick, e
             position="static"
             elevation={0} // Removes MUI's default shadow
             sx={{
-                boxShadow: 'none',    // No shadow
-                borderBottom: 'none', // No bottom border
-                backgroundColor: bgColor,
-                color: fgColor
+                boxShadow: 'none',
+                borderBottom: 'none',
+                bgcolor: 'background.paper',
+                color: 'text.primary',
             }}
         >
             <Toolbar
@@ -65,7 +56,7 @@ const Header: React.FC<HeaderProps> = ({ onShare, onExampleClick, onCopyClick, e
                         <Logo />
                     </Link>
                     {!isSmallScreen && (
-                        <Typography variant="subtitle1" sx={subtitleStyle} ml={1}>
+                        <Typography variant="subtitle1" sx={{ color: 'text.secondary' }} ml={1}>
                             The JQ Playground
                         </Typography>
                     )}
@@ -90,7 +81,7 @@ const Header: React.FC<HeaderProps> = ({ onShare, onExampleClick, onCopyClick, e
                     </Tooltip>
                     <Tooltip title="Source">
                         <IconButton color="inherit" aria-label="Source">
-                            <Link href="https://github.com/jqlang/playground" passHref target='_blank'>
+                            <Link href="https://github.com/jqlang/playground" passHref target='_blank' style={{ color: 'inherit', display: 'flex' }}>
                                 <GitHub />
                             </Link>
                         </IconButton>

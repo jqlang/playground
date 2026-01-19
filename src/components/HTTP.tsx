@@ -2,7 +2,7 @@ import { Box, Grid, MenuItem, TextField, useTheme } from "@mui/material";
 import { useEffect, useState, useCallback } from "react";
 import Editor from "./Editor";
 import TabList from "./TabList";
-import { HttpMethodSchema, HttpMethodType, HttpType } from "@/workers/model";
+import { HttpMethodSchema, HttpMethodType, HttpType } from "@/schemas";
 
 interface HTTPProps {
     value?: HttpType;

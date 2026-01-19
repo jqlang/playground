@@ -1,4 +1,5 @@
 import { z } from 'zod';
+import { MAX_JSON_SIZE } from '../constants';
 
 // Schema for HTTP methods
 export const HttpMethodSchema = z.enum(['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS', 'HEAD']);
@@ -31,25 +32,9 @@ export const HttpRequestSchema = z.object({
     method: HttpMethodSchema,
     url: HttpUrlSchema,
     headers: HttpHeadersSchema.optional(),
-    body: z.string().optional(),
+    body: z.string().max(MAX_JSON_SIZE, `HTTP body must be at most ${MAX_JSON_SIZE} bytes`).optional(),
 });
 
-export const Option = z.enum(['-c', '-n', '-R', '-r', '-s', '-S']);
-export const Options = z.array(Option);
-
-// Main input schema
-export const Snippet = z.object({
-    json: z.string().optional().nullable(),
-    http: HttpRequestSchema.optional().nullable(),
-    query: z.string().min(1),
-    options: Options.optional().nullable(),
-}).refine(data => (data.json ? !data.http : !!data.http), {
-    message: 'Either JSON or HTTP must be provided.',
-    path: ['json', 'http'],
-});
-
-// TypeScript types for better type inference
+// TypeScript types
 export type HttpMethodType = z.infer<typeof HttpMethodSchema>;
 export type HttpType = z.infer<typeof HttpRequestSchema>;
-export type SnippetType = z.infer<typeof Snippet>;
-export type OptionsType = z.infer<typeof Options>;

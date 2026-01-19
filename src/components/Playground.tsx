@@ -12,9 +12,9 @@ import { Notification, NotificationProps } from './Notification';
 import { currentUnixTimestamp, generateMessageId, normalizeLineBreaks, prettifyZodError } from '@/lib/utils';
 import { JQWorker } from '@/workers';
 import { useRouter } from 'next/navigation';
-import { HttpMethodType, HttpType, Snippet, SnippetType, OptionsType, Options } from '@/workers/model';
+import { HttpMethodType, HttpType, Snippet, SnippetType, OptionsType, Options } from '@/schemas';
+import { SnippetCreateResponse, SnippetError } from '@/schemas/api';
 import { ZodError } from 'zod';
-import { CreateSnippetResponse } from '@/app/api/snippets/route';
 
 const runTimeout = 30000;
 
@@ -202,15 +202,17 @@ function PlaygroundElement({ input, initialNotification }: PlaygroundProps) {
                 body: JSON.stringify(body),
             });
 
-            const data: CreateSnippetResponse = await response.json();
+            const data = await response.json();
 
             if (!response.ok) {
-                const errorMessage = data.errors?.join(', ') || response.statusText;
+                const errorData = data as SnippetError;
+                const errorMessage = errorData.errors?.join(', ') || errorData.error || response.statusText;
                 throw new Error(errorMessage);
             }
 
-            if (data.slug) {
-                router.push(`/s/${data.slug}`);
+            const successData = data as SnippetCreateResponse;
+            if (successData.slug) {
+                router.push(`/s/${successData.slug}`);
             } else {
                 throw new Error('Unexpected response: Missing slug');
             }

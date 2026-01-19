@@ -1,4 +1,4 @@
-import { HttpMethodType, HttpType } from '@/workers/model';
+import { HttpMethodType, HttpType } from '@/schemas';
 import Editor from './Editor';
 import HTTP from './HTTP';
 import TabList from './TabList';

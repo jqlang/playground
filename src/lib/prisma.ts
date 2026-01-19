@@ -1,7 +1,7 @@
 import { PrismaClient } from '@prisma/client';
 import { version as uuidVersion, validate as uuidValidate } from 'uuid';
 import crypto from 'crypto';
-import { SnippetType } from '@/workers/model';
+import { SnippetType } from '@/schemas';
 
 declare global {
     var prisma: PrismaClient | undefined;

@@ -69,6 +69,24 @@ function addExamples() {
     };
   }
 
+  // Add description to Option enum explaining each flag (markdown table)
+  // Note: next-openapi-gen doesn't pick up .describe() on standalone enum schemas
+  const optionSchema = spec.components?.schemas?.Option;
+  if (optionSchema && !optionSchema.description) {
+    optionSchema.description = [
+      'jq command-line flags:',
+      '',
+      '| Flag | Description |',
+      '|------|-------------|',
+      '| `-c` | Compact output |',
+      '| `-n` | Null input (don\'t read any input) |',
+      '| `-R` | Raw input (read as strings, not JSON) |',
+      '| `-r` | Raw output (strings without quotes) |',
+      '| `-s` | Slurp (read entire input into array) |',
+      '| `-S` | Sort object keys |',
+    ].join('\n');
+  }
+
   fs.writeFileSync(OPENAPI_PATH, JSON.stringify(spec, null, 2) + '\n');
   console.log('Added examples to OpenAPI spec');
 }

@@ -48,7 +48,7 @@
           "options": {
             "type": "string",
             "nullable": true,
-            "description": "Comma-separated jq options (e.g., \"-r,-c\")",
+            "description": "Comma-separated jq options: -c (compact), -n (null input), -R (raw input), -r (raw output), -s (slurp), -S (sort keys)",
             "example": "-r,-c"
           }
         },
@@ -117,25 +117,29 @@
         "properties": {
           "json": {
             "type": "string",
-            "nullable": true
+            "nullable": true,
+            "description": "JSON input to process"
           },
           "http": {
             "allOf": [
               {
                 "$ref": "#/components/schemas/HttpRequestSchema"
               }
-            ]
+            ],
+            "description": "HTTP request to fetch JSON from"
           },
           "query": {
             "type": "string",
-            "minLength": 1
+            "minLength": 1,
+            "description": "jq query to execute"
           },
           "options": {
             "allOf": [
               {
                 "$ref": "#/components/schemas/Options"
               }
-            ]
+            ],
+            "description": "jq command-line options"
           }
         },
         "required": [
@@ -236,7 +240,8 @@
           "-r",
           "-s",
           "-S"
-        ]
+        ],
+        "description": "jq command-line flags:\n\n| Flag | Description |\n|------|-------------|\n| `-c` | Compact output |\n| `-n` | Null input (don't read any input) |\n| `-R` | Raw input (read as strings, not JSON) |\n| `-r` | Raw output (strings without quotes) |\n| `-s` | Slurp (read entire input into array) |\n| `-S` | Sort object keys |"
       },
       "Options": {
         "type": "array",
@@ -254,14 +259,17 @@
           "PATCH",
           "OPTIONS",
           "HEAD"
-        ]
+        ],
+        "description": "HTTP method"
       },
       "HttpHeadersSchema": {
-        "type": "string"
+        "type": "string",
+        "description": "HTTP headers as JSON object string (e.g., {\"Authorization\": \"Bearer token\"})"
       },
       "HttpUrlSchema": {
         "type": "string",
-        "format": "uri"
+        "format": "uri",
+        "description": "URL to fetch JSON from"
       },
       "HttpRequestSchema": {
         "type": "object",
@@ -281,7 +289,8 @@
           },
           "body": {
             "type": "string",
-            "nullable": true
+            "nullable": true,
+            "description": "HTTP request body"
           }
         },
         "required": [
@@ -473,11 +482,11 @@
             "name": "options",
             "schema": {
               "type": "string",
-              "description": "Comma-separated jq options (e.g., \"-r,-c\")",
+              "description": "Comma-separated jq options: -c (compact), -n (null input), -R (raw input), -r (raw output), -s (slurp), -S (sort keys)",
               "example": "-r,-c"
             },
             "required": false,
-            "description": "Comma-separated jq options (e.g., \"-r,-c\")"
+            "description": "Comma-separated jq options: -c (compact), -n (null input), -R (raw input), -r (raw output), -s (slurp), -S (sort keys)"
           }
         ],
         "responses": {

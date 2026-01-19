@@ -6,7 +6,7 @@ import { Options } from '../domain/snippet';
 export const JqQueryParamsSchema = z.object({
     json: z.string().describe('JSON input to process'),
     query: z.string().describe('jq query to execute'),
-    options: z.string().optional().describe('Comma-separated jq options (e.g., "-r,-c")'),
+    options: z.string().optional().describe('Comma-separated jq options: -c (compact), -n (null input), -R (raw input), -r (raw output), -s (slurp), -S (sort keys)'),
 });
 
 // Request body for POST /api/jq

@@ -2,11 +2,12 @@ import { z } from 'zod';
 import { MAX_JSON_SIZE } from '../constants';
 
 // Schema for HTTP methods
-export const HttpMethodSchema = z.enum(['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS', 'HEAD']);
+export const HttpMethodSchema = z.enum(['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS', 'HEAD']).describe('HTTP method');
 
 // Schema for HTTP headers as a JSON string
 export const HttpHeadersSchema = z
     .string()
+    .describe('HTTP headers as JSON object string (e.g., {"Authorization": "Bearer token"})')
     .refine((value) => {
         // Allow empty or undefined strings, else validate as JSON
         if (!value) return true;
@@ -25,14 +26,14 @@ export const HttpHeadersSchema = z
     });
 
 // Schema for HTTP URL
-export const HttpUrlSchema = z.string().url();
+export const HttpUrlSchema = z.string().url().describe('URL to fetch JSON from');
 
 // Full HTTP request schema
 export const HttpRequestSchema = z.object({
     method: HttpMethodSchema,
     url: HttpUrlSchema,
     headers: HttpHeadersSchema.optional(),
-    body: z.string().max(MAX_JSON_SIZE, `HTTP body must be at most ${MAX_JSON_SIZE} bytes`).optional(),
+    body: z.string().max(MAX_JSON_SIZE, `HTTP body must be at most ${MAX_JSON_SIZE} bytes`).optional().describe('HTTP request body'),
 });
 
 // TypeScript types

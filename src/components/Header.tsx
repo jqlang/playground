@@ -1,5 +1,5 @@
 import { AppBar, Toolbar, IconButton, Box, Tooltip, Typography, useMediaQuery, useTheme } from '@mui/material';
-import { ContentCopy, GitHub, Help, Share } from '@mui/icons-material';
+import { Api, ContentCopy, GitHub, Help, Share } from '@mui/icons-material';
 import { useState } from 'react';
 import Link from 'next/link';
 import Logo from './Logo';
@@ -72,6 +72,13 @@ const Header: React.FC<HeaderProps> = ({ onShare, onExampleClick, onCopyClick, e
                     <Tooltip title="Cheatsheet">
                         <IconButton color="inherit" onClick={handleCheatsheetOpen} aria-label="Cheatsheet">
                             <Help />
+                        </IconButton>
+                    </Tooltip>
+                    <Tooltip title="API">
+                        <IconButton color="inherit" aria-label="API">
+                            <Link href="/api" passHref target="_blank" style={{ color: 'inherit', display: 'flex' }}>
+                                <Api />
+                            </Link>
                         </IconButton>
                     </Tooltip>
                     <Tooltip title="Share">

@@ -34,7 +34,8 @@ RUN npm ci --include=dev
 # Copy application code
 COPY --link . .
 
-# Build application
+# Build application (increase heap size for large dependencies like @scalar/api-reference)
+ENV NODE_OPTIONS="--max-old-space-size=4096"
 RUN npm run build
 
 # Save prisma CLI before pruning dev dependencies

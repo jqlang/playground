@@ -8,8 +8,26 @@ jobs:
     steps:
       - uses: actions/checkout@v6
       - uses: superfly/flyctl-actions/setup-flyctl@master
-      - run: flyctl deploy --build-arg NODE_VERSION="$(cat .node-version)" --build-arg NEXT_PUBLIC_SENTRY_DSN="${NEXT_PUBLIC_SENTRY_DSN}" --build-arg SENTRY_AUTH_TOKEN="${SENTRY_AUTH_TOKEN}"
+      # Build Docker image locally in GitHub Actions (more memory than Fly.io builder)
+      # then deploy the pre-built image to Fly.io
+      - name: Build Docker image
+        run: |
+          docker build \
+            --build-arg NODE_VERSION="$(cat .node-version)" \
+            --build-arg NEXT_PUBLIC_SENTRY_DSN="${NEXT_PUBLIC_SENTRY_DSN}" \
+            --build-arg SENTRY_AUTH_TOKEN="${SENTRY_AUTH_TOKEN}" \
+            -t registry.fly.io/jqplay-next:${{ github.sha }} \
+            .
         env:
-          FLY_API_TOKEN: ${{ secrets.FLY_API_TOKEN }}
           NEXT_PUBLIC_SENTRY_DSN: ${{ secrets.NEXT_PUBLIC_SENTRY_DSN }}
           SENTRY_AUTH_TOKEN: ${{ secrets.SENTRY_AUTH_TOKEN }}
+      - name: Push image to Fly.io registry
+        run: |
+          flyctl auth docker
+          docker push registry.fly.io/jqplay-next:${{ github.sha }}
+        env:
+          FLY_API_TOKEN: ${{ secrets.FLY_API_TOKEN }}
+      - name: Deploy to Fly.io
+        run: flyctl deploy --image registry.fly.io/jqplay-next:${{ github.sha }}
+        env:
+          FLY_API_TOKEN: ${{ secrets.FLY_API_TOKEN }}

@@ -24,7 +24,7 @@ export async function executeHttp(
         }
     }
 
-    const resp = await fetch(u.toString(), {
+    const resp = await fetch(u, {
         method: http.method,
         headers: headers,
         body: http.body,
@@ -34,6 +34,12 @@ export async function executeHttp(
         throw new Error(`HTTP request failed with status ${resp.status}`);
     }
 
-    const json = await resp.json();
+    let json;
+    try {
+        json = await resp.json();
+    } catch {
+        throw new Error('HTTP response is not valid JSON');
+    }
+
     return executeJq(JSON.stringify(json), query, options);
 }

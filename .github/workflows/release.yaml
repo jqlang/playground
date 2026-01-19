@@ -8,7 +8,7 @@ jobs:
     steps:
       - uses: actions/checkout@v6
       - uses: superfly/flyctl-actions/setup-flyctl@master
-      - run: flyctl deploy --build-arg NEXT_PUBLIC_SENTRY_DSN="${NEXT_PUBLIC_SENTRY_DSN}" --build-arg SENTRY_AUTH_TOKEN="${SENTRY_AUTH_TOKEN}"
+      - run: flyctl deploy --build-arg NODE_VERSION="$(cat .node-version)" --build-arg NEXT_PUBLIC_SENTRY_DSN="${NEXT_PUBLIC_SENTRY_DSN}" --build-arg SENTRY_AUTH_TOKEN="${SENTRY_AUTH_TOKEN}"
         env:
           FLY_API_TOKEN: ${{ secrets.FLY_API_TOKEN }}
           NEXT_PUBLIC_SENTRY_DSN: ${{ secrets.NEXT_PUBLIC_SENTRY_DSN }}

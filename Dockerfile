@@ -1,6 +1,6 @@
 # syntax = docker/dockerfile:1
 
-# Adjust NODE_VERSION as desired
+# NODE_VERSION is read from .node-version and passed via --build-arg
 ARG NODE_VERSION=25
 
 FROM node:${NODE_VERSION}-slim AS base

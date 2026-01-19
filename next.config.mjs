@@ -3,8 +3,10 @@ import { withSentryConfig } from '@sentry/nextjs';
 /** @type {import('next').NextConfig} */
 const nextConfig = {
     output: "standalone",
+    // Include packages that are dynamically loaded by piscina workers
+    serverExternalPackages: ['jq-wasm', 'piscina'],
     outputFileTracingIncludes: {
-        '/app/api/jq/route': ['./src/workers/server/worker.cjs'],
+        '/app/api/jq/route': ['./src/workers/server/worker.cjs', './node_modules/jq-wasm/**/*'],
     },
     webpack: (config, { isServer }) => {
         config.resolve.fallback = {

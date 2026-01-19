@@ -38,7 +38,7 @@ COPY --link . .
 ENV NODE_OPTIONS="--max-old-space-size=4096"
 RUN npm run build
 
-# Save prisma CLI before pruning dev dependencies
+# Save prisma CLI before pruning dev dependencies (needed for migrations)
 RUN mkdir -p /prisma-cli && cp -r node_modules/prisma node_modules/@prisma /prisma-cli/
 
 # Remove development dependencies
@@ -53,7 +53,7 @@ RUN apt-get update -qq && \
     apt-get install --no-install-recommends -y openssl && \
     rm -rf /var/lib/apt/lists /var/cache/apt/archives
 
-# Copy prisma CLI from build stage (uses version from package.json)
+# Copy prisma CLI for migrations (not part of Next.js app runtime)
 COPY --from=build /prisma-cli/prisma /app/node_modules/prisma
 COPY --from=build /prisma-cli/@prisma /app/node_modules/@prisma
 

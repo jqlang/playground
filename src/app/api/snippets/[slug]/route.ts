@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server';
 import { GetSnippet } from '@/lib/prisma';
-import { Snippet } from '@/schemas';
+import { Snippet, SnippetType } from '@/schemas';
+import { SnippetError } from '@/schemas/api';
 import { ZodError } from 'zod';
 import * as Sentry from '@sentry/node';
 
@@ -9,14 +10,15 @@ interface PageProps {
 }
 
 /**
+ * Get a snippet by slug
  * @description Get a snippet by slug
  * @pathParams slug - The unique identifier for the snippet
- * @response 200 - Snippet - Snippet data
- * @response 404 - { error: string } - Snippet not found
- * @response 422 - { errors: ZodError[] } - Validation error
- * @response 500 - { error: string } - Server error
+ * @response 200:Snippet
+ * @response 404:SnippetErrorSchema
+ * @response 422:SnippetErrorSchema
+ * @response 500:SnippetErrorSchema
  */
-export async function GET(_: Request, { params }: PageProps) {
+export async function GET(_: Request, { params }: PageProps): Promise<NextResponse<SnippetType | SnippetError>> {
     const slug = (await params).slug;
     if (!slug) {
         return NextResponse.json({ error: 'No slug provided' }, { status: 404 });
@@ -35,7 +37,8 @@ export async function GET(_: Request, { params }: PageProps) {
         Sentry.captureException(error, { extra: { slug } });
 
         if (error instanceof ZodError) {
-            return NextResponse.json({ errors: error.errors }, { status: 422 });
+            const errorMessages = error.errors.map(e => e.message);
+            return NextResponse.json({ errors: errorMessages }, { status: 422 });
         }
         return NextResponse.json({ error: 'Server error' }, { status: 500 });
     }

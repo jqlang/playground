@@ -44,10 +44,6 @@
         "error": {
           "type": "string",
           "example": "{{ERROR_MESSAGE}}"
-        },
-        "code": {
-          "type": "string",
-          "example": "{{ERROR_CODE}}"
         }
       }
     },
@@ -55,43 +51,37 @@
       "400": {
         "description": "Bad Request",
         "variables": {
-          "ERROR_MESSAGE": "Invalid request parameters",
-          "ERROR_CODE": "BAD_REQUEST"
+          "ERROR_MESSAGE": "Invalid request parameters"
         }
       },
       "401": {
         "description": "Unauthorized",
         "variables": {
-          "ERROR_MESSAGE": "Authentication required",
-          "ERROR_CODE": "UNAUTHORIZED"
+          "ERROR_MESSAGE": "Authentication required"
         }
       },
       "403": {
         "description": "Forbidden",
         "variables": {
-          "ERROR_MESSAGE": "Access denied",
-          "ERROR_CODE": "FORBIDDEN"
+          "ERROR_MESSAGE": "Access denied"
         }
       },
       "404": {
         "description": "Not Found",
         "variables": {
-          "ERROR_MESSAGE": "Resource not found",
-          "ERROR_CODE": "NOT_FOUND"
+          "ERROR_MESSAGE": "Resource not found"
         }
       },
       "409": {
         "description": "Conflict",
         "variables": {
-          "ERROR_MESSAGE": "Resource already exists",
-          "ERROR_CODE": "CONFLICT"
+          "ERROR_MESSAGE": "Resource already exists"
         }
       },
       "500": {
         "description": "Internal Server Error",
         "variables": {
-          "ERROR_MESSAGE": "An unexpected error occurred",
-          "ERROR_CODE": "INTERNAL_ERROR"
+          "ERROR_MESSAGE": "An unexpected error occurred"
         }
       }
     }

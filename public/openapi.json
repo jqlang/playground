@@ -20,8 +20,29 @@
       }
     },
     "schemas": {
-      "json": {
-        "type": "object"
+      "HealthResponseSchema": {
+        "type": "object",
+        "properties": {
+          "status": {
+            "type": "string",
+            "description": "Service status"
+          }
+        },
+        "required": [
+          "status"
+        ]
+      },
+      "JqResponseSchema": {
+        "type": "object",
+        "properties": {
+          "result": {
+            "type": "string",
+            "description": "The jq query result"
+          }
+        },
+        "required": [
+          "result"
+        ]
       },
       "JqRequestSchema": {
         "type": "object",
@@ -79,6 +100,91 @@
         },
         "required": [
           "query"
+        ]
+      },
+      "SnippetCreateResponseSchema": {
+        "type": "object",
+        "properties": {
+          "slug": {
+            "type": "string",
+            "description": "Unique snippet identifier"
+          }
+        },
+        "required": [
+          "slug"
+        ]
+      },
+      "JqErrorSchema": {
+        "type": "object",
+        "properties": {
+          "error": {
+            "oneOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "array",
+                "items": {}
+              }
+            ],
+            "description": "Error message or validation errors"
+          }
+        },
+        "required": [
+          "error"
+        ]
+      },
+      "JqRequest": {
+        "type": "object",
+        "properties": {
+          "json": {
+            "type": "string",
+            "description": "JSON input to process"
+          },
+          "query": {
+            "type": "string",
+            "description": "jq query to execute"
+          },
+          "options": {
+            "type": "object",
+            "description": "jq command-line options"
+          }
+        },
+        "required": [
+          "json",
+          "query"
+        ]
+      },
+      "JqResponse": {
+        "type": "object",
+        "properties": {
+          "result": {
+            "type": "string",
+            "description": "The jq query result"
+          }
+        },
+        "required": [
+          "result"
+        ]
+      },
+      "JqError": {
+        "type": "object",
+        "properties": {
+          "error": {
+            "oneOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "array",
+                "items": {}
+              }
+            ],
+            "description": "Error message or validation errors"
+          }
+        },
+        "required": [
+          "error"
         ]
       },
       "Option": {
@@ -142,6 +248,24 @@
           "method",
           "url"
         ]
+      },
+      "SnippetErrorSchema": {
+        "type": "object",
+        "properties": {
+          "error": {
+            "type": "string",
+            "nullable": true,
+            "description": "Error message"
+          },
+          "errors": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "nullable": true,
+            "description": "Validation errors"
+          }
+        }
       }
     },
     "responses": {
@@ -155,10 +279,6 @@
                 "error": {
                   "type": "string",
                   "example": "Invalid request parameters"
-                },
-                "code": {
-                  "type": "string",
-                  "example": "400"
                 }
               }
             }
@@ -175,10 +295,6 @@
                 "error": {
                   "type": "string",
                   "example": "Authentication required"
-                },
-                "code": {
-                  "type": "string",
-                  "example": "401"
                 }
               }
             }
@@ -195,10 +311,6 @@
                 "error": {
                   "type": "string",
                   "example": "Access denied"
-                },
-                "code": {
-                  "type": "string",
-                  "example": "403"
                 }
               }
             }
@@ -215,10 +327,6 @@
                 "error": {
                   "type": "string",
                   "example": "Resource not found"
-                },
-                "code": {
-                  "type": "string",
-                  "example": "404"
                 }
               }
             }
@@ -235,10 +343,6 @@
                 "error": {
                   "type": "string",
                   "example": "Resource already exists"
-                },
-                "code": {
-                  "type": "string",
-                  "example": "409"
                 }
               }
             }
@@ -255,10 +359,6 @@
                 "error": {
                   "type": "string",
                   "example": "An unexpected error occurred"
-                },
-                "code": {
-                  "type": "string",
-                  "example": "500"
                 }
               }
             }
@@ -271,7 +371,7 @@
     "/health": {
       "get": {
         "operationId": "get-health",
-        "summary": "",
+        "summary": "Health check endpoint",
         "description": "Health check endpoint",
         "tags": [
           "Health"
@@ -283,7 +383,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/200 - { status: string } - Service is healthy"
+                  "$ref": "#/components/schemas/HealthResponseSchema"
                 }
               }
             }
@@ -300,7 +400,7 @@
     "/jq": {
       "get": {
         "operationId": "get-jq",
-        "summary": "",
+        "summary": "Execute a jq query via query parameters",
         "description": "Execute a jq query against JSON input via query parameters",
         "tags": [
           "Jq"
@@ -312,7 +412,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/200 - { result: string } - Query executed successfully"
+                  "$ref": "#/components/schemas/JqResponseSchema"
                 }
               }
             }
@@ -327,7 +427,7 @@
       },
       "post": {
         "operationId": "post-jq",
-        "summary": "",
+        "summary": "Execute a jq query",
         "description": "Execute a jq query against JSON input",
         "tags": [
           "Jq"
@@ -343,12 +443,12 @@
           }
         },
         "responses": {
-          "201": {
+          "200": {
             "description": "Successful response",
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/200 - { result: string } - Query executed successfully"
+                  "$ref": "#/components/schemas/JqResponseSchema"
                 }
               }
             }
@@ -365,7 +465,7 @@
     "/snippets": {
       "post": {
         "operationId": "post-snippets",
-        "summary": "",
+        "summary": "Create or update a snippet",
         "description": "Create or update a snippet",
         "tags": [
           "Snippets"
@@ -381,12 +481,12 @@
           }
         },
         "responses": {
-          "201": {
+          "200": {
             "description": "Successful response",
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/200 - { slug: string } - Snippet saved successfully"
+                  "$ref": "#/components/schemas/SnippetCreateResponseSchema"
                 }
               }
             }
@@ -403,7 +503,7 @@
     "/snippets/{slug}": {
       "get": {
         "operationId": "get-snippets-{slug}",
-        "summary": "",
+        "summary": "Get a snippet by slug",
         "description": "Get a snippet by slug",
         "tags": [
           "Snippets"
@@ -415,7 +515,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/200 - Snippet - Snippet data"
+                  "$ref": "#/components/schemas/Snippet"
                 }
               }
             }

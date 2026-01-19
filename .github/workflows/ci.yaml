@@ -13,16 +13,13 @@ jobs:
       - uses: actions/setup-node@v6
         with:
           node-version-file: package.json
-          cache: 'npm'
+          cache: "npm"
           cache-dependency-path: package-lock.json
       - name: Install dependencies
         run: npm install
       - name: Run lint
         run: npm run lint
+      - name: Run tests
+        run: npm test
       - name: Build project
         run: npm run build
-#   release:
-#     needs: [build]
-#     uses: ./.github/workflows/release.yaml
-#     if: github.ref == 'refs/heads/main'
-#     secrets: inherit

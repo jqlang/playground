@@ -44,7 +44,7 @@
     "eslint-config-next": "15.1.7",
     "monaco-editor": "^0.55.1",
     "next-openapi-gen": "^0.9.4",
-    "prisma": "^6.7.0",
+    "prisma": "6.7.0",
     "typescript": "^5",
     "vitest": "^4.0.17"
   }

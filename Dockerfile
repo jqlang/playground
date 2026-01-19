@@ -15,7 +15,7 @@ ENV NODE_ENV="production"
 
 
 # Throw-away build stage to reduce size of final image
-FROM base as build
+FROM base AS build
 
 ARG NEXT_PUBLIC_SENTRY_DSN=
 ARG SENTRY_AUTH_TOKEN=
@@ -38,8 +38,8 @@ COPY --link . .
 ENV NODE_OPTIONS="--max-old-space-size=4096"
 RUN npm run build
 
-# Save prisma CLI and its dependencies before pruning dev dependencies
-RUN mkdir -p /prisma-cli && cp -r node_modules/prisma node_modules/@prisma node_modules/effect /prisma-cli/
+# Save prisma CLI before pruning dev dependencies
+RUN mkdir -p /prisma-cli && cp -r node_modules/prisma node_modules/@prisma /prisma-cli/
 
 # Remove development dependencies
 RUN npm prune --omit=dev
@@ -53,10 +53,9 @@ RUN apt-get update -qq && \
     apt-get install --no-install-recommends -y openssl && \
     rm -rf /var/lib/apt/lists /var/cache/apt/archives
 
-# Copy prisma CLI and dependencies from build stage (uses version from package.json)
+# Copy prisma CLI from build stage (uses version from package.json)
 COPY --from=build /prisma-cli/prisma /app/node_modules/prisma
 COPY --from=build /prisma-cli/@prisma /app/node_modules/@prisma
-COPY --from=build /prisma-cli/effect /app/node_modules/effect
 
 # Copy built application
 COPY --from=build /app/.next/standalone /app

@@ -2,6 +2,14 @@ import { z } from 'zod';
 import { MAX_JSON_SIZE, MAX_QUERY_SIZE } from '../constants';
 import { Options } from '../domain/snippet';
 
+// Query parameters for GET /api/jq
+export const JqQueryParamsSchema = z.object({
+    json: z.string().describe('JSON input to process'),
+    query: z.string().describe('jq query to execute'),
+    options: z.string().optional().describe('Comma-separated jq options (e.g., "-r,-c")'),
+});
+
+// Request body for POST /api/jq
 export const JqRequestSchema = z.object({
     json: z.string().max(MAX_JSON_SIZE, `JSON must be at most ${MAX_JSON_SIZE} bytes`).describe('JSON input to process'),
     query: z.string().max(MAX_QUERY_SIZE, `Query must be at most ${MAX_QUERY_SIZE} bytes`).describe('jq query to execute'),

@@ -3,7 +3,7 @@
   "info": {
     "title": "jq Playground API",
     "version": "1.0.0",
-    "description": "Execute jq queries and share snippets"
+    "description": "Execute jq queries and share snippets.\n\n**Want a UI?** Try the [jq playground](https://play.jqlang.org) for an interactive experience."
   },
   "servers": [
     {
@@ -32,6 +32,31 @@
           "status"
         ]
       },
+      "JqQueryParamsSchema": {
+        "type": "object",
+        "properties": {
+          "json": {
+            "type": "string",
+            "description": "JSON input to process",
+            "example": "{\"name\": \"jq\", \"version\": \"1.7\"}"
+          },
+          "query": {
+            "type": "string",
+            "description": "jq query to execute",
+            "example": ".name"
+          },
+          "options": {
+            "type": "string",
+            "nullable": true,
+            "description": "Comma-separated jq options (e.g., \"-r,-c\")",
+            "example": "-r,-c"
+          }
+        },
+        "required": [
+          "json",
+          "query"
+        ]
+      },
       "JqResponseSchema": {
         "type": "object",
         "properties": {
@@ -49,11 +74,13 @@
         "properties": {
           "json": {
             "type": "string",
-            "description": "JSON input to process"
+            "description": "JSON input to process",
+            "example": "{\"name\": \"jq\", \"version\": \"1.7\"}"
           },
           "query": {
             "type": "string",
-            "description": "jq query to execute"
+            "description": "jq query to execute",
+            "example": ".name"
           },
           "options": {
             "allOf": [
@@ -61,7 +88,11 @@
                 "$ref": "#/components/schemas/Options"
               }
             ],
-            "description": "jq command-line options"
+            "description": "jq command-line options",
+            "example": [
+              "-r",
+              "-c"
+            ]
           }
         },
         "required": [
@@ -69,8 +100,17 @@
           "query"
         ]
       },
-      "slug": {
-        "type": "object"
+      "SnippetPathParamsSchema": {
+        "type": "object",
+        "properties": {
+          "slug": {
+            "type": "string",
+            "description": "Unique snippet identifier"
+          }
+        },
+        "required": [
+          "slug"
+        ]
       },
       "Snippet": {
         "type": "object",
@@ -401,11 +441,45 @@
       "get": {
         "operationId": "get-jq",
         "summary": "Execute a jq query via query parameters",
-        "description": "Execute a jq query against JSON input via query parameters",
+        "description": "Execute a jq query against JSON input via query parameters. Great for simple queries and quick testing.",
         "tags": [
           "Jq"
         ],
-        "parameters": [],
+        "parameters": [
+          {
+            "in": "query",
+            "name": "json",
+            "schema": {
+              "type": "string",
+              "description": "JSON input to process",
+              "example": "{\"name\": \"jq\", \"version\": \"1.7\"}"
+            },
+            "required": false,
+            "description": "JSON input to process"
+          },
+          {
+            "in": "query",
+            "name": "query",
+            "schema": {
+              "type": "string",
+              "description": "jq query to execute",
+              "example": ".name"
+            },
+            "required": false,
+            "description": "jq query to execute"
+          },
+          {
+            "in": "query",
+            "name": "options",
+            "schema": {
+              "type": "string",
+              "description": "Comma-separated jq options (e.g., \"-r,-c\")",
+              "example": "-r,-c"
+            },
+            "required": false,
+            "description": "Comma-separated jq options (e.g., \"-r,-c\")"
+          }
+        ],
         "responses": {
           "200": {
             "description": "Successful response",
@@ -428,7 +502,7 @@
       "post": {
         "operationId": "post-jq",
         "summary": "Execute a jq query",
-        "description": "Execute a jq query against JSON input",
+        "description": "Execute a jq query against JSON input. Use this for complex queries or large JSON payloads.",
         "tags": [
           "Jq"
         ],
@@ -476,6 +550,13 @@
             "application/json": {
               "schema": {
                 "$ref": "#/components/schemas/Snippet"
+              },
+              "example": {
+                "json": "{\"name\": \"jq\", \"version\": \"1.7\"}",
+                "query": ".name",
+                "options": [
+                  "-r"
+                ]
               }
             }
           }
@@ -508,7 +589,19 @@
         "tags": [
           "Snippets"
         ],
-        "parameters": [],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "slug",
+            "schema": {
+              "type": "string",
+              "description": "Unique snippet identifier"
+            },
+            "required": true,
+            "description": "Unique snippet identifier",
+            "example": "slug"
+          }
+        ],
         "responses": {
           "200": {
             "description": "Successful response",

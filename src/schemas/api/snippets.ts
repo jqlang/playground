@@ -1,5 +1,9 @@
 import { z } from 'zod';
 
+export const SnippetPathParamsSchema = z.object({
+    slug: z.string().describe('Unique snippet identifier'),
+});
+
 export const SnippetCreateResponseSchema = z.object({
     slug: z.string().describe('Unique snippet identifier'),
 });

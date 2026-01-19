@@ -13,7 +13,7 @@
     "copy-monaco": "bash scripts/copy-monaco.sh",
     "setup-db": "node scripts/setup-db.js",
     "prisma:migrate": "npm run setup-db && npx prisma migrate dev",
-    "openapi": "next-openapi-gen generate"
+    "openapi": "next-openapi-gen generate && node scripts/add-openapi-examples.js"
   },
   "dependencies": {
     "@emotion/react": "^11.14.0",

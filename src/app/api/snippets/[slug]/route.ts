@@ -12,7 +12,7 @@ interface PageProps {
 /**
  * Get a snippet by slug
  * @description Get a snippet by slug
- * @pathParams slug - The unique identifier for the snippet
+ * @pathParams SnippetPathParamsSchema
  * @response 200:Snippet
  * @response 404:SnippetErrorSchema
  * @response 422:SnippetErrorSchema

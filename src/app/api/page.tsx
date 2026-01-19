@@ -29,6 +29,15 @@ export default function ApiDocsPage() {
             description: "Current server",
           },
         ],
+        hideClientButton: false,
+        defaultHttpClient: {
+          targetKey: "shell",
+          clientKey: "curl",
+        },
+        metaData: {
+          title: "jq Playground API",
+          description: "Execute jq queries programmatically",
+        },
       }}
     />
   );

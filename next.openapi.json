@@ -3,7 +3,7 @@
   "info": {
     "title": "jq Playground API",
     "version": "1.0.0",
-    "description": "Execute jq queries and share snippets"
+    "description": "Execute jq queries and share snippets.\n\n**Want a UI?** Try the [jq playground](https://play.jqlang.org) for an interactive experience."
   },
   "servers": [
     {

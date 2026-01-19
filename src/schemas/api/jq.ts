@@ -4,8 +4,8 @@ import { Options } from '../domain/snippet';
 
 // Query parameters for GET /api/jq
 export const JqQueryParamsSchema = z.object({
-    json: z.string().describe('JSON input to process'),
-    query: z.string().describe('jq query to execute'),
+    json: z.string().describe('JSON input to process (URL-encoded)'),
+    query: z.string().describe('jq query to execute (URL-encoded if it contains special characters like |, +, &)'),
     options: z.string().optional().describe('Comma-separated jq options: -c (compact), -n (null input), -R (raw input), -r (raw output), -s (slurp), -S (sort keys)'),
 });
 

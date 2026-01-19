@@ -1,6 +1,6 @@
 import { ZodError } from 'zod';
 import * as Sentry from '@sentry/nextjs';
-import { JqRequestSchema, JqQueryParamsSchema, JqResponse, JqError } from '@/schemas/api';
+import { JqRequestSchema, JqError } from '@/schemas/api';
 import { runJqWithTimeout, TimeoutError } from '@/workers/server';
 
 const TIMEOUT_MS = 5000; // 5 seconds
@@ -15,6 +15,13 @@ function jsonResponse<T>(data: T, status: number, headers?: Record<string, strin
     return Response.json(data, {
         status,
         headers: { ...CORS_HEADERS, ...headers },
+    });
+}
+
+function textResponse(text: string, status: number, headers?: Record<string, string>): Response {
+    return new Response(text, {
+        status,
+        headers: { ...CORS_HEADERS, 'Content-Type': 'text/plain; charset=utf-8', ...headers },
     });
 }
 
@@ -88,8 +95,7 @@ export async function GET(request: Request) {
         );
         const executionTime = Math.round(performance.now() - startTime);
 
-        const response: JqResponse = { result };
-        return jsonResponse(response, 200, {
+        return textResponse(result, 200, {
             'X-Execution-Time': `${executionTime}ms`,
         });
     } catch (e: unknown) {
@@ -121,8 +127,7 @@ export async function POST(request: Request) {
         );
         const executionTime = Math.round(performance.now() - startTime);
 
-        const response: JqResponse = { result };
-        return jsonResponse(response, 200, {
+        return textResponse(result, 200, {
             'X-Execution-Time': `${executionTime}ms`,
         });
     } catch (e: unknown) {

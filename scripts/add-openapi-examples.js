@@ -69,6 +69,22 @@ function addExamples() {
     };
   }
 
+  // Change /jq endpoints to return text/plain instead of JSON
+  // next-openapi-gen hardcodes application/json for responses, no tag to override
+  for (const method of ['get', 'post']) {
+    const jqPath = spec.paths?.['/jq']?.[method];
+    if (jqPath?.responses?.['200']?.content?.['application/json']) {
+      delete jqPath.responses['200'].content['application/json'];
+      jqPath.responses['200'].content['text/plain'] = {
+        schema: {
+          type: 'string',
+          description: 'Raw jq output',
+          example: '"jq"',
+        },
+      };
+    }
+  }
+
   // Add description to Option enum explaining each flag (markdown table)
   // Note: next-openapi-gen doesn't pick up .describe() on standalone enum schemas
   const optionSchema = spec.components?.schemas?.Option;

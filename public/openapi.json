@@ -37,12 +37,12 @@
         "properties": {
           "json": {
             "type": "string",
-            "description": "JSON input to process",
+            "description": "JSON input to process (URL-encoded)",
             "example": "{\"name\": \"jq\", \"version\": \"1.7\"}"
           },
           "query": {
             "type": "string",
-            "description": "jq query to execute",
+            "description": "jq query to execute (URL-encoded if it contains special characters like |, +, &)",
             "example": ".name"
           },
           "options": {
@@ -460,22 +460,22 @@
             "name": "json",
             "schema": {
               "type": "string",
-              "description": "JSON input to process",
+              "description": "JSON input to process (URL-encoded)",
               "example": "{\"name\": \"jq\", \"version\": \"1.7\"}"
             },
             "required": false,
-            "description": "JSON input to process"
+            "description": "JSON input to process (URL-encoded)"
           },
           {
             "in": "query",
             "name": "query",
             "schema": {
               "type": "string",
-              "description": "jq query to execute",
+              "description": "jq query to execute (URL-encoded if it contains special characters like |, +, &)",
               "example": ".name"
             },
             "required": false,
-            "description": "jq query to execute"
+            "description": "jq query to execute (URL-encoded if it contains special characters like |, +, &)"
           },
           {
             "in": "query",
@@ -493,9 +493,11 @@
           "200": {
             "description": "Successful response",
             "content": {
-              "application/json": {
+              "text/plain": {
                 "schema": {
-                  "$ref": "#/components/schemas/JqResponseSchema"
+                  "type": "string",
+                  "description": "Raw jq output",
+                  "example": "\"jq\""
                 }
               }
             }
@@ -529,9 +531,11 @@
           "200": {
             "description": "Successful response",
             "content": {
-              "application/json": {
+              "text/plain": {
                 "schema": {
-                  "$ref": "#/components/schemas/JqResponseSchema"
+                  "type": "string",
+                  "description": "Raw jq output",
+                  "example": "\"jq\""
                 }
               }
             }

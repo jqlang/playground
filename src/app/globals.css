@@ -1,1 +1,15 @@
 /* Global styles */
+
+html,
+body {
+  margin: 0;
+  padding: 0;
+  background-color: #ffffff;
+}
+
+@media (prefers-color-scheme: dark) {
+  html,
+  body {
+    background-color: #1e1e1e;
+  }
+}

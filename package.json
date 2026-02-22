@@ -23,7 +23,7 @@
     "@mui/lab": "^6.0.0-beta.21",
     "@mui/material": "^6.4.8",
     "@prisma/client": "^6.7.0",
-    "@scalar/api-reference-react": "^0.8.27",
+    "@scalar/api-reference-react": "^0.8.62",
     "@sentry/nextjs": "^9.17.0",
     "@sentry/node": "^9.17.0",
     "ajv": "^8.17.1",
@@ -41,11 +41,14 @@
     "@types/uuid": "^9.0.8",
     "comlink": "^4.4.1",
     "eslint": "^9",
-    "eslint-config-next": "15.1.7",
+    "eslint-config-next": "^15.5.12",
     "monaco-editor": "^0.55.1",
     "next-openapi-gen": "^0.9.4",
     "prisma": "6.7.0",
     "typescript": "^5",
     "vitest": "^4.0.17"
+  },
+  "overrides": {
+    "minimatch": ">=10.2.1"
   }
 }

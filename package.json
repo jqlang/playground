@@ -46,7 +46,7 @@
     "next-openapi-gen": "^0.9.4",
     "prisma": "6.7.0",
     "typescript": "^5",
-    "vitest": "^4.0.17"
+    "vitest": "^4.0.18"
   },
   "overrides": {
     "minimatch": ">=10.2.1"

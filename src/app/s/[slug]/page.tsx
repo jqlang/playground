@@ -1,5 +1,6 @@
 import { Playground } from '@/components/Playground';
 import { redirect } from 'next/navigation';
+import type { JSX } from 'react';
 import { Snippet } from '@/schemas';
 import { GetSnippet } from '@/lib/prisma';
 import * as Sentry from '@sentry/node';

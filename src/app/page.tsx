@@ -1,5 +1,5 @@
 import { Playground } from '@/components/Playground';
-import { Suspense } from 'react';
+import { Suspense, type JSX } from 'react';
 import { Box, CircularProgress } from '@mui/material';
 import { NotificationProps } from '@/components/Notification';
 import { generateMessageId, prettifyZodError } from '@/lib/utils';

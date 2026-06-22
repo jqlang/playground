@@ -1,4 +1,5 @@
 import { PrismaClient } from '@prisma/client';
+import { PrismaPg } from '@prisma/adapter-pg';
 import { version as uuidVersion, validate as uuidValidate } from 'uuid';
 import crypto from 'crypto';
 import { SnippetType } from '@/schemas';
@@ -7,8 +8,12 @@ declare global {
     var prisma: PrismaClient | undefined;
 }
 
+// Prisma 7 connects through a driver adapter instead of a schema datasource URL.
+const adapter = new PrismaPg({ connectionString: process.env.DATABASE_URL });
+
 // Use a single PrismaClient instance in development and production environments.
 const prisma = global.prisma || new PrismaClient({
+    adapter,
     log: process.env.NODE_ENV === 'development' ? ['query', 'info', 'warn', 'error'] : ['warn', 'error'],
 });
 

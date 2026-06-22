@@ -62,6 +62,8 @@ COPY --from=build /app/.next/standalone /app
 COPY --from=build /app/.next/static /app/.next/static
 COPY --from=build /app/public /app/public
 COPY --from=build /app/prisma /app/prisma
+# Prisma 7 reads the migrate connection URL from prisma.config.ts (release_command runs `prisma migrate deploy`)
+COPY --from=build /app/prisma.config.ts /app/prisma.config.ts
 
 # Start the server by default, this can be overwritten at runtime
 EXPOSE 3000

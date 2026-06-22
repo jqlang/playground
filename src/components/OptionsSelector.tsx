@@ -51,7 +51,7 @@ const OptionsSelector: React.FC<OptionsProps> = ({ options, setOptions }) => {
                             {(selected as string[]).map((value) => (
                                 <Chip
                                     key={value}
-                                    label={<Typography fontSize={theme.typography.fontSize}>{flagOptions[value]}</Typography>}
+                                    label={<Typography sx={{ fontSize: theme.typography.fontSize }}>{flagOptions[value]}</Typography>}
                                     onMouseDown={(event) => event.stopPropagation()}
                                     onDelete={handleDelete(value)}
                                 />
@@ -62,7 +62,7 @@ const OptionsSelector: React.FC<OptionsProps> = ({ options, setOptions }) => {
                 >
                     {Object.entries(flagOptions).map(([value, label]) => (
                         <MenuItem key={value} value={value}>
-                            <Typography fontSize={theme.typography.fontSize}>{label}</Typography>
+                            <Typography sx={{ fontSize: theme.typography.fontSize }}>{label}</Typography>
                         </MenuItem>
                     ))}
                 </Select>

@@ -23,8 +23,8 @@ const HTTP: React.FC<HTTPProps> = ({ value, handleHttp }) => {
 
     return (
         <Box component="form" sx={{ width: '100%', display: 'flex', flexDirection: 'column', height: '100%', backgroundColor: theme.palette.background.default }}>
-            <Grid container spacing={2} alignItems="center" sx={{ paddingLeft: 1, paddingRight: 1 }}>
-                <Grid item xs={3}>
+            <Grid container spacing={2} sx={{ alignItems: 'center', paddingLeft: 1, paddingRight: 1 }}>
+                <Grid size={3}>
                     <TextField
                         select
                         label="Method"
@@ -40,7 +40,7 @@ const HTTP: React.FC<HTTPProps> = ({ value, handleHttp }) => {
                         ))}
                     </TextField>
                 </Grid>
-                <Grid item xs={9}>
+                <Grid size={9}>
                     <TextField
                         label="URL"
                         value={url}
@@ -52,7 +52,7 @@ const HTTP: React.FC<HTTPProps> = ({ value, handleHttp }) => {
                 </Grid>
             </Grid>
             <Grid container spacing={1} sx={{ flexGrow: 1, flexDirection: 'column', paddingLeft: 1, paddingRight: 1 }}>
-                <Grid item xs={12} sx={{ flexGrow: 1, display: 'flex', flexDirection: 'column', height: '100%' }}>
+                <Grid size={12} sx={{ flexGrow: 1, display: 'flex', flexDirection: 'column', height: '100%' }}>
                     <TabList
                         tabs={[
                             {

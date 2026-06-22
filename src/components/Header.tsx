@@ -56,7 +56,7 @@ const Header: React.FC<HeaderProps> = ({ onShare, onExampleClick, onCopyClick, e
                         <Logo />
                     </Link>
                     {!isSmallScreen && (
-                        <Typography variant="subtitle1" sx={{ color: 'text.secondary' }} ml={1}>
+                        <Typography variant="subtitle1" sx={{ color: 'text.secondary', ml: 1 }}>
                             The JQ Playground
                         </Typography>
                     )}

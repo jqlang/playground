@@ -257,12 +257,10 @@ function PlaygroundElement({ input, initialNotification }: PlaygroundProps) {
                         minWidth: '100%',
                     }}
                 >
-                    <Grid item xs={12} md={6} sx={{ display: 'flex', flexDirection: 'column' }}>
+                    <Grid size={{ xs: 12, md: 6 }} sx={{ display: 'flex', flexDirection: 'column' }}>
                         <Grid container spacing={1} sx={{ flexGrow: 1 }}>
                             <Grid
-                                item
-                                xs={12}
-                                md={12}
+                                size={12}
                                 sx={{ display: 'flex', flexDirection: 'column', minHeight: minQueryEditorHeight }}
                             >
                                 <QueryEditor value={query} handleChange={handleQueryEditorChange} />
@@ -273,18 +271,16 @@ function PlaygroundElement({ input, initialNotification }: PlaygroundProps) {
                         </Box>
                         <Grid container spacing={1} sx={{ flexGrow: 1 }}>
                             <Grid
-                                item
-                                xs={12}
-                                md={12}
+                                size={12}
                                 sx={{ display: 'flex', flexDirection: 'column', minHeight: minEditorHeight }}
                             >
                                 <JSONEditor json={json} http={http} handleJSONChange={handleJSONEditorChange} handleHTTPChange={handleHttp} />
                             </Grid>
                         </Grid>
                     </Grid>
-                    <Grid item xs={12} md={6} sx={{ display: 'flex', flexDirection: 'column' }}>
+                    <Grid size={{ xs: 12, md: 6 }} sx={{ display: 'flex', flexDirection: 'column' }}>
                         <Grid container sx={{ flexGrow: 1 }}>
-                            <Grid item xs={12} md={12} sx={{ display: 'flex', flexDirection: 'column', minHeight: minEditorHeight }}>
+                            <Grid size={12} sx={{ display: 'flex', flexDirection: 'column', minHeight: minEditorHeight }}>
                                 <OutputEditor result={result} />
                             </Grid>
                         </Grid>

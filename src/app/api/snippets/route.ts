@@ -29,7 +29,7 @@ export async function POST(req: Request): Promise<NextResponse<SnippetCreateResp
 
         // Handle Zod validation errors
         if (error instanceof ZodError) {
-            const errorMessages = error.errors.map(e => e.message);
+            const errorMessages = error.issues.map(e => e.message);
             return NextResponse.json({ errors: errorMessages }, { status: 422 });
         }
 

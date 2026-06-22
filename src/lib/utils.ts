@@ -13,5 +13,5 @@ export function normalizeLineBreaks(text: string | undefined | null) {
 }
 
 export function prettifyZodError(error: ZodError) {
-    return error.errors.map(e => `${e.path.join(', ')} ${e.message}`.toLowerCase()).join(', ');
+    return error.issues.map(e => `${e.path.join(', ')} ${e.message}`.toLowerCase()).join(', ');
 }

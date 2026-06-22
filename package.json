@@ -42,7 +42,7 @@
     "@types/react-dom": "^19",
     "@types/uuid": "^9.0.8",
     "comlink": "^4.4.1",
-    "eslint": "^9.39.4",
+    "eslint": "^10.5.0",
     "eslint-config-next": "^16.2.9",
     "monaco-editor": "^0.55.1",
     "next-openapi-gen": "^0.9.4",

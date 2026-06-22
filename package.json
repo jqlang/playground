@@ -22,7 +22,8 @@
     "@mui/icons-material": "^9.1.1",
     "@mui/lab": "9.0.0-beta.5",
     "@mui/material": "^9.1.1",
-    "@prisma/client": "^6.19.3",
+    "@prisma/adapter-pg": "^7.8.0",
+    "@prisma/client": "^7.8.0",
     "@scalar/api-reference-react": "^0.9.47",
     "@sentry/nextjs": "^10.59.0",
     "@sentry/node": "^10.59.0",
@@ -45,13 +46,14 @@
     "eslint-config-next": "^16.2.9",
     "monaco-editor": "^0.55.1",
     "next-openapi-gen": "^0.9.4",
-    "prisma": "^6.19.3",
+    "prisma": "^7.8.0",
     "typescript": "^5",
     "vitest": "^4.1.9"
   },
   "overrides": {
     "minimatch": ">=10.2.1",
     "dompurify": "^3.4.11",
-    "postcss": "^8.5.10"
+    "postcss": "^8.5.10",
+    "@hono/node-server": "^1.19.13"
   }
 }

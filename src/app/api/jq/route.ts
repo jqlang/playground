@@ -27,7 +27,7 @@ function textResponse(text: string, status: number, headers?: Record<string, str
 
 function handleError(e: unknown): Response {
     if (e instanceof ZodError) {
-        const error: JqError = { error: e.errors };
+        const error: JqError = { error: e.issues };
         return jsonResponse(error, 422);
     }
 

@@ -37,7 +37,7 @@ export async function GET(_: Request, { params }: PageProps): Promise<NextRespon
         Sentry.captureException(error, { extra: { slug } });
 
         if (error instanceof ZodError) {
-            const errorMessages = error.errors.map(e => e.message);
+            const errorMessages = error.issues.map(e => e.message);
             return NextResponse.json({ errors: errorMessages }, { status: 422 });
         }
         return NextResponse.json({ error: 'Server error' }, { status: 500 });

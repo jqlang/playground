@@ -54,6 +54,11 @@ describe('executeJq', () => {
             const result = await executeJq('ignored', '1 + 1', ['-n']);
             expect(result).toBe('2');
         });
+
+        it('applies -n with empty input (loaded null-input snippet)', async () => {
+            const result = await executeJq('', '1 + 1', ['-n']);
+            expect(result).toBe('2');
+        });
     });
 
     describe('error handling', () => {

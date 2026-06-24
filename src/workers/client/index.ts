@@ -57,7 +57,7 @@ export class JQWorker {
         if (input.http) {
             return this.#worker!.http(input.http, input.query, input.options);
         } else {
-            return this.#worker!.jq(input.json!, input.query, input.options);
+            return this.#worker!.jq(input.json ?? '', input.query, input.options);
         }
     }
 
@@ -65,7 +65,7 @@ export class JQWorker {
         if (input.http) {
             return executeHttp(input.http, input.query, input.options);
         } else {
-            return executeJq(input.json!, input.query, input.options);
+            return executeJq(input.json ?? '', input.query, input.options);
         }
     }
 

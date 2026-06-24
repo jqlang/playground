@@ -2,14 +2,14 @@ import { ZodError } from 'zod';
 import * as Sentry from '@sentry/nextjs';
 import { JqRequestSchema, JqError } from '@/schemas/api';
 import { runJqWithTimeout, TimeoutError, PoolOverloadError } from '@/workers/server';
-import { rateLimit } from '@/lib/rate-limit';
+import { RateLimiterMemory, RateLimiterRes } from 'rate-limiter-flexible';
 
 const TIMEOUT_MS = 5000; // 5 seconds
 
 // Per-IP rate limit for the public, unauthenticated jq API. Bounds how fast a
 // single client can push work onto the jq worker pool (memory/CPU protection).
-const RATE_LIMIT = 60;          // requests
-const RATE_WINDOW_MS = 60_000;  // per minute
+// In-memory, so the limit is enforced per server instance.
+const jqRateLimiter = new RateLimiterMemory({ points: 60, duration: 60 });
 
 const CORS_HEADERS = {
     'Access-Control-Allow-Origin': '*',
@@ -42,11 +42,19 @@ function clientKey(request: Request): string {
 }
 
 // Returns a 429 Response if the caller is over the rate limit, else null.
-function rateLimited(request: Request): Response | null {
-    const { allowed, retryAfterSec } = rateLimit(`jq:${clientKey(request)}`, RATE_LIMIT, RATE_WINDOW_MS);
-    if (allowed) return null;
-    const error: JqError = { error: 'Rate limit exceeded. Please retry shortly.' };
-    return jsonResponse(error, 429, { 'Retry-After': String(retryAfterSec) });
+async function rateLimited(request: Request): Promise<Response | null> {
+    try {
+        await jqRateLimiter.consume(`jq:${clientKey(request)}`);
+        return null;
+    } catch (rejection) {
+        // rate-limiter-flexible rejects with a RateLimiterRes when over the limit,
+        // or with an Error on an internal store failure — fail open on the latter.
+        if (rejection instanceof Error) return null;
+        const { msBeforeNext } = rejection as RateLimiterRes;
+        const retryAfterSec = Math.max(1, Math.ceil(msBeforeNext / 1000));
+        const error: JqError = { error: 'Rate limit exceeded. Please retry shortly.' };
+        return jsonResponse(error, 429, { 'Retry-After': String(retryAfterSec) });
+    }
 }
 
 function handleError(e: unknown): Response {
@@ -97,7 +105,7 @@ export async function OPTIONS() {
  * @response 500:JqErrorSchema
  */
 export async function GET(request: Request) {
-    const limited = rateLimited(request);
+    const limited = await rateLimited(request);
     if (limited) return limited;
 
     try {
@@ -146,7 +154,7 @@ export async function GET(request: Request) {
  * @response 500:JqErrorSchema
  */
 export async function POST(request: Request) {
-    const limited = rateLimited(request);
+    const limited = await rateLimited(request);
     if (limited) return limited;
 
     try {

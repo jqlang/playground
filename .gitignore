@@ -41,3 +41,6 @@ next-env.d.ts
 
 # Generated Monaco editor files
 public/monaco-editor/
+
+# next-openapi-gen cache
+.openapi-gen/

@@ -32,6 +32,74 @@
           "status"
         ]
       },
+      "HttpHeadersSchema": {
+        "type": "string",
+        "description": "HTTP headers as JSON object string (e.g., {\"Authorization\": \"Bearer token\"})"
+      },
+      "HttpMethodSchema": {
+        "type": "string",
+        "enum": [
+          "GET",
+          "POST",
+          "PUT",
+          "DELETE",
+          "PATCH",
+          "OPTIONS",
+          "HEAD"
+        ],
+        "description": "HTTP method"
+      },
+      "HttpRequestSchema": {
+        "type": "object",
+        "properties": {
+          "method": {
+            "$ref": "#/components/schemas/HttpMethodSchema"
+          },
+          "url": {
+            "$ref": "#/components/schemas/HttpUrlSchema"
+          },
+          "headers": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/HttpHeadersSchema"
+              }
+            ]
+          },
+          "body": {
+            "type": "string",
+            "description": "HTTP request body"
+          }
+        },
+        "required": [
+          "method",
+          "url"
+        ]
+      },
+      "HttpUrlSchema": {
+        "type": "string",
+        "format": "uri",
+        "description": "URL to fetch JSON from"
+      },
+      "JqErrorSchema": {
+        "type": "object",
+        "properties": {
+          "error": {
+            "oneOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "array",
+                "items": {}
+              }
+            ],
+            "description": "Error message or validation errors"
+          }
+        },
+        "required": [
+          "error"
+        ]
+      },
       "JqQueryParamsSchema": {
         "type": "object",
         "properties": {
@@ -47,7 +115,6 @@
           },
           "options": {
             "type": "string",
-            "nullable": true,
             "description": "Comma-separated jq options: -c (compact), -n (null input), -R (raw input), -r (raw output), -s (slurp), -S (sort keys)",
             "example": "-r,-c"
           }
@@ -55,18 +122,6 @@
         "required": [
           "json",
           "query"
-        ]
-      },
-      "JqResponseSchema": {
-        "type": "object",
-        "properties": {
-          "result": {
-            "type": "string",
-            "description": "The jq query result"
-          }
-        },
-        "required": [
-          "result"
         ]
       },
       "JqRequestSchema": {
@@ -100,85 +155,7 @@
           "query"
         ]
       },
-      "SnippetPathParamsSchema": {
-        "type": "object",
-        "properties": {
-          "slug": {
-            "type": "string",
-            "description": "Unique snippet identifier"
-          }
-        },
-        "required": [
-          "slug"
-        ]
-      },
-      "Snippet": {
-        "type": "object",
-        "properties": {
-          "json": {
-            "type": "string",
-            "nullable": true,
-            "description": "JSON input to process"
-          },
-          "http": {
-            "allOf": [
-              {
-                "$ref": "#/components/schemas/HttpRequestSchema"
-              }
-            ],
-            "description": "HTTP request to fetch JSON from"
-          },
-          "query": {
-            "type": "string",
-            "minLength": 1,
-            "description": "jq query to execute"
-          },
-          "options": {
-            "allOf": [
-              {
-                "$ref": "#/components/schemas/Options"
-              }
-            ],
-            "description": "jq command-line options"
-          }
-        },
-        "required": [
-          "query"
-        ]
-      },
-      "SnippetCreateResponseSchema": {
-        "type": "object",
-        "properties": {
-          "slug": {
-            "type": "string",
-            "description": "Unique snippet identifier"
-          }
-        },
-        "required": [
-          "slug"
-        ]
-      },
-      "JqErrorSchema": {
-        "type": "object",
-        "properties": {
-          "error": {
-            "oneOf": [
-              {
-                "type": "string"
-              },
-              {
-                "type": "array",
-                "items": {}
-              }
-            ],
-            "description": "Error message or validation errors"
-          }
-        },
-        "required": [
-          "error"
-        ]
-      },
-      "JqRequest": {
+      "JqRequestSchemaOutput": {
         "type": "object",
         "properties": {
           "json": {
@@ -199,7 +176,7 @@
           "query"
         ]
       },
-      "JqResponse": {
+      "JqResponseSchema": {
         "type": "object",
         "properties": {
           "result": {
@@ -209,26 +186,6 @@
         },
         "required": [
           "result"
-        ]
-      },
-      "JqError": {
-        "type": "object",
-        "properties": {
-          "error": {
-            "oneOf": [
-              {
-                "type": "string"
-              },
-              {
-                "type": "array",
-                "items": {}
-              }
-            ],
-            "description": "Error message or validation errors"
-          }
-        },
-        "required": [
-          "error"
         ]
       },
       "Option": {
@@ -249,53 +206,44 @@
           "$ref": "#/components/schemas/Option"
         }
       },
-      "HttpMethodSchema": {
-        "type": "string",
-        "enum": [
-          "GET",
-          "POST",
-          "PUT",
-          "DELETE",
-          "PATCH",
-          "OPTIONS",
-          "HEAD"
-        ],
-        "description": "HTTP method"
-      },
-      "HttpHeadersSchema": {
-        "type": "string",
-        "description": "HTTP headers as JSON object string (e.g., {\"Authorization\": \"Bearer token\"})"
-      },
-      "HttpUrlSchema": {
-        "type": "string",
-        "format": "uri",
-        "description": "URL to fetch JSON from"
-      },
-      "HttpRequestSchema": {
+      "Snippet": {
         "type": "object",
         "properties": {
-          "method": {
-            "$ref": "#/components/schemas/HttpMethodSchema"
-          },
-          "url": {
-            "$ref": "#/components/schemas/HttpUrlSchema"
-          },
-          "headers": {
-            "allOf": [
-              {
-                "$ref": "#/components/schemas/HttpHeadersSchema"
-              }
-            ]
-          },
-          "body": {
+          "json": {
             "type": "string",
             "nullable": true,
-            "description": "HTTP request body"
+            "description": "JSON input to process"
+          },
+          "http": {
+            "$ref": "#/components/schemas/HttpRequestSchema",
+            "description": "HTTP request to fetch JSON from",
+            "nullable": true
+          },
+          "query": {
+            "type": "string",
+            "minLength": 1,
+            "description": "jq query to execute"
+          },
+          "options": {
+            "$ref": "#/components/schemas/Options",
+            "description": "jq command-line options",
+            "nullable": true
           }
         },
         "required": [
-          "method",
-          "url"
+          "query"
+        ]
+      },
+      "SnippetCreateResponseSchema": {
+        "type": "object",
+        "properties": {
+          "slug": {
+            "type": "string",
+            "description": "Unique snippet identifier"
+          }
+        },
+        "required": [
+          "slug"
         ]
       },
       "SnippetErrorSchema": {
@@ -303,7 +251,6 @@
         "properties": {
           "error": {
             "type": "string",
-            "nullable": true,
             "description": "Error message"
           },
           "errors": {
@@ -311,10 +258,21 @@
             "items": {
               "type": "string"
             },
-            "nullable": true,
             "description": "Validation errors"
           }
         }
+      },
+      "SnippetPathParamsSchema": {
+        "type": "object",
+        "properties": {
+          "slug": {
+            "type": "string",
+            "description": "Unique snippet identifier"
+          }
+        },
+        "required": [
+          "slug"
+        ]
       }
     },
     "responses": {
@@ -458,34 +416,34 @@
           {
             "in": "query",
             "name": "json",
+            "required": true,
             "schema": {
               "type": "string",
               "description": "JSON input to process (URL-encoded)",
               "example": "{\"name\": \"jq\", \"version\": \"1.7\"}"
             },
-            "required": false,
             "description": "JSON input to process (URL-encoded)"
           },
           {
             "in": "query",
             "name": "query",
+            "required": true,
             "schema": {
               "type": "string",
               "description": "jq query to execute (URL-encoded if it contains special characters like |, +, &)",
               "example": ".name"
             },
-            "required": false,
             "description": "jq query to execute (URL-encoded if it contains special characters like |, +, &)"
           },
           {
             "in": "query",
             "name": "options",
+            "required": false,
             "schema": {
               "type": "string",
               "description": "Comma-separated jq options: -c (compact), -n (null input), -R (raw input), -r (raw output), -s (slurp), -S (sort keys)",
               "example": "-r,-c"
             },
-            "required": false,
             "description": "Comma-separated jq options: -c (compact), -n (null input), -R (raw input), -r (raw output), -s (slurp), -S (sort keys)"
           }
         ],
@@ -503,10 +461,44 @@
             }
           },
           "400": {
-            "$ref": "#/components/responses/400"
+            "description": "Bad Request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/JqErrorSchema"
+                }
+              }
+            }
+          },
+          "408": {
+            "description": "HTTP 408",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/JqErrorSchema"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Unprocessable Entity",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/JqErrorSchema"
+                }
+              }
+            }
           },
           "500": {
-            "$ref": "#/components/responses/500"
+            "description": "Internal Server Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/JqErrorSchema"
+                }
+              }
+            }
           }
         }
       },
@@ -541,10 +533,44 @@
             }
           },
           "400": {
-            "$ref": "#/components/responses/400"
+            "description": "Bad Request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/JqErrorSchema"
+                }
+              }
+            }
+          },
+          "408": {
+            "description": "HTTP 408",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/JqErrorSchema"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Unprocessable Entity",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/JqErrorSchema"
+                }
+              }
+            }
           },
           "500": {
-            "$ref": "#/components/responses/500"
+            "description": "Internal Server Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/JqErrorSchema"
+                }
+              }
+            }
           }
         }
       }
@@ -588,8 +614,25 @@
           "400": {
             "$ref": "#/components/responses/400"
           },
+          "422": {
+            "description": "Unprocessable Entity",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SnippetErrorSchema"
+                }
+              }
+            }
+          },
           "500": {
-            "$ref": "#/components/responses/500"
+            "description": "Internal Server Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SnippetErrorSchema"
+                }
+              }
+            }
           }
         }
       }
@@ -606,11 +649,11 @@
           {
             "in": "path",
             "name": "slug",
+            "required": true,
             "schema": {
               "type": "string",
               "description": "Unique snippet identifier"
             },
-            "required": true,
             "description": "Unique snippet identifier",
             "example": "slug"
           }
@@ -629,11 +672,49 @@
           "400": {
             "$ref": "#/components/responses/400"
           },
+          "404": {
+            "description": "Not Found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SnippetErrorSchema"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Unprocessable Entity",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SnippetErrorSchema"
+                }
+              }
+            }
+          },
           "500": {
-            "$ref": "#/components/responses/500"
+            "description": "Internal Server Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SnippetErrorSchema"
+                }
+              }
+            }
           }
         }
       }
     }
-  }
+  },
+  "tags": [
+    {
+      "name": "Health"
+    },
+    {
+      "name": "Jq"
+    },
+    {
+      "name": "Snippets"
+    }
+  ]
 }

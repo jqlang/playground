@@ -110,6 +110,17 @@ describe('Snippet schema', () => {
             expect(result.options).toEqual(['-n']);
             expect(result.query).toBe('1 + 1');
         });
+
+        it('rejects a -n snippet that still provides both json and http', () => {
+            // -n waives the "need a source" rule, never the "not both" rule — the
+            // client would fetch the HTTP source even though jq ignores input.
+            expect(() => Snippet.parse({
+                json: '{}',
+                http: { method: 'GET', url: 'https://example.com' },
+                query: '.',
+                options: ['-n'],
+            })).toThrow('Either JSON or HTTP must be provided');
+        });
     });
 
     describe('query validation', () => {

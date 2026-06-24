@@ -1,7 +1,7 @@
 import { Playground } from '@/components/Playground';
 import { redirect } from 'next/navigation';
 import type { JSX } from 'react';
-import { Snippet } from '@/schemas';
+import { SnippetRead } from '@/schemas';
 import { GetSnippet } from '@/lib/prisma';
 import * as Sentry from '@sentry/node';
 
@@ -21,7 +21,7 @@ export default async function Page({ params }: PageProps): Promise<JSX.Element> 
     }
 
     try {
-        const input = Snippet.parse(snippet);
+        const input = SnippetRead.parse(snippet);
         return (
             <Playground
                 input={input}

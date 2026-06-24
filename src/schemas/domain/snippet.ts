@@ -24,12 +24,15 @@ const SnippetShape = z.object({
     options: Options.optional().nullable().describe('jq command-line options'),
 });
 
-// Write-time input schema: enforces that exactly one of json/http is provided,
-// except for -n (null input) snippets, where jq ignores input so no source is
-// required.
+// Write-time input schema: at most one of json/http, and exactly one unless the
+// snippet uses -n (null input), where jq ignores input so no source is required.
 export const Snippet = SnippetShape.refine(data => {
+    // Never both — the client would fetch the HTTP source even for a -n snippet.
+    if (data.json && data.http) return false;
+    // -n waives the "need a source" requirement.
     if (data.options?.includes('-n')) return true;
-    return data.json ? !data.http : !!data.http;
+    // Otherwise exactly one (the both-case is already rejected above).
+    return !!data.json || !!data.http;
 }, {
     message: 'Either JSON or HTTP must be provided.',
     path: ['json', 'http'],

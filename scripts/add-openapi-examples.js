@@ -103,31 +103,8 @@ function addExamples() {
     ].join('\n');
   }
 
-  // Wrap any `$ref` that carries sibling keywords (nullable/description/...) in
-  // `allOf`. In OpenAPI 3.0 a property that is just a `$ref` is a Reference Object,
-  // so siblings are ignored by validators and client generators — which silently
-  // drops `nullable` on Snippet.http / Snippet.options. The allOf wrapper restores it.
-  wrapRefSiblings(spec);
-
   fs.writeFileSync(OPENAPI_PATH, JSON.stringify(spec, null, 2) + '\n');
   console.log('Added examples to OpenAPI spec');
-}
-
-function wrapRefSiblings(node) {
-  if (Array.isArray(node)) {
-    for (const item of node) wrapRefSiblings(item);
-    return;
-  }
-  if (!node || typeof node !== 'object') return;
-
-  // A $ref alongside any other key: move the ref under allOf so the siblings count.
-  if (typeof node.$ref === 'string' && Object.keys(node).length > 1) {
-    const ref = node.$ref;
-    delete node.$ref;
-    node.allOf = [{ $ref: ref }];
-  }
-
-  for (const value of Object.values(node)) wrapRefSiblings(value);
 }
 
 function addExamplesToProperties(properties, examples) {

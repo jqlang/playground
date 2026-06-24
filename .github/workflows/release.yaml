@@ -6,7 +6,7 @@ jobs:
   release:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v7
       - uses: superfly/flyctl-actions/setup-flyctl@master
       # Build Docker image locally in GitHub Actions (more memory than Fly.io builder)
       # then deploy the pre-built image to Fly.io

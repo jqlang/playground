@@ -9,7 +9,7 @@ import OptionsSelector from './OptionsSelector';
 import OutputEditor from './OutputEditor';
 import { ThemeProvider } from './ThemeProvider';
 import { Notification, NotificationProps } from './Notification';
-import { currentUnixTimestamp, generateMessageId, normalizeLineBreaks, prettifyZodError } from '@/lib/utils';
+import { currentUnixTimestamp, generateMessageId, hasInputSource, normalizeLineBreaks, prettifyZodError } from '@/lib/utils';
 import { JQWorker } from '@/workers';
 import { useRouter } from 'next/navigation';
 import { HttpMethodType, HttpType, Snippet, SnippetType, OptionsType, Options } from '@/schemas';
@@ -129,7 +129,7 @@ function PlaygroundElement({ input, initialNotification }: PlaygroundProps) {
         clearRunTimeout();
         setResult('');
 
-        if ((!json && !http) || query === '') return;
+        if (!hasInputSource(json, http, options) || query === '') return;
 
         setResult('Running...');
         const runId = currentUnixTimestamp();
@@ -185,9 +185,9 @@ function PlaygroundElement({ input, initialNotification }: PlaygroundProps) {
     }, [setHttp, setJson]);
 
     const handleShare = useCallback(async () => {
-        if ((!json && !http) || !query) {
+        if (!hasInputSource(json, http, options) || !query) {
             setNotification({
-                message: 'Please provide a Query and either JSON or HTTP data.',
+                message: 'Please provide a Query, and either JSON/HTTP data or the -n (null input) flag.',
                 messageId: generateMessageId(),
                 severity: 'error',
             });

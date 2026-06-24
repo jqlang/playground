@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { runJqWithTimeout, TimeoutError } from './pool';
+import { runJqWithTimeout, TimeoutError, computeMaxThreads } from './pool';
 
 describe('runJqWithTimeout', () => {
     describe('basic jq execution', () => {
@@ -88,7 +88,7 @@ describe('runJqWithTimeout', () => {
         });
 
         it('handles more requests than pool size', async () => {
-            // Pool size is 4, so this tests overflow handling
+            // More requests than the worker count, so this exercises queueing
             const queries = Array.from({ length: 8 }, (_, i) =>
                 runJqWithTimeout(`{"n": ${i}}`, '.n', undefined, 5000)
             );
@@ -96,5 +96,27 @@ describe('runJqWithTimeout', () => {
             const results = await Promise.all(queries);
             expect(results).toEqual(['0', '1', '2', '3', '4', '5', '6', '7']);
         });
+    });
+});
+
+describe('computeMaxThreads (memory-based pool sizing)', () => {
+    const MB = 1024 * 1024;
+
+    it('keeps the tuned value of 2 on a ~512MB Fly machine', () => {
+        // A "512MB" Fly machine reports ~470-500MB MemTotal (Firecracker reserve).
+        expect(computeMaxThreads(512 * MB)).toBe(2);
+        expect(computeMaxThreads(490 * MB)).toBe(2);
+        expect(computeMaxThreads(470 * MB)).toBe(2);
+    });
+
+    it('floors at 1 on tiny machines', () => {
+        expect(computeMaxThreads(256 * MB)).toBe(1);
+        expect(computeMaxThreads(128 * MB)).toBe(1);
+    });
+
+    it('scales up with more memory but stays hard-capped', () => {
+        expect(computeMaxThreads(1024 * MB)).toBeGreaterThan(2);
+        // A misread (host RAM on a cgroup-limited container) must not explode the pool.
+        expect(computeMaxThreads(64 * 1024 * MB)).toBeLessThanOrEqual(4);
     });
 });

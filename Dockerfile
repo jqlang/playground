@@ -38,8 +38,15 @@ COPY --link . .
 ENV NODE_OPTIONS="--max-old-space-size=4096"
 RUN npm run build
 
-# Save prisma CLI before pruning dev dependencies (needed for migrations)
-RUN mkdir -p /prisma-cli && cp -r node_modules/prisma node_modules/@prisma /prisma-cli/
+# Stage a self-contained Prisma CLI with its FULL production dependency closure
+# for the release_command. Prisma 7's @prisma/config pulls in hoisted deps
+# (effect, c12, deepmerge-ts, empathic, ...) that a cherry-pick of node_modules/
+# prisma + @prisma misses, which breaks `prisma migrate deploy` with
+# "Cannot find module 'effect'". A dedicated install resolves the complete tree;
+# pin to the already-installed version to avoid prisma/@prisma/client drift.
+RUN mkdir -p /prisma-cli && cd /prisma-cli \
+    && npm init -y > /dev/null 2>&1 \
+    && npm install --omit=dev --no-audit --no-fund "prisma@$(node -p "require('/app/node_modules/prisma/package.json').version")"
 
 # Remove development dependencies
 RUN npm prune --omit=dev
@@ -53,9 +60,11 @@ RUN apt-get update -qq && \
     apt-get install --no-install-recommends -y openssl && \
     rm -rf /var/lib/apt/lists /var/cache/apt/archives
 
-# Copy prisma CLI for migrations (not part of Next.js app runtime)
-COPY --from=build /prisma-cli/prisma /app/node_modules/prisma
-COPY --from=build /prisma-cli/@prisma /app/node_modules/@prisma
+# Merge the complete Prisma CLI closure into the app's node_modules so the
+# release_command (`prisma migrate deploy`) can resolve prisma/config and its
+# transitive deps. Copied before the standalone output below, so the app's traced
+# node_modules layers on top (its @prisma/client / adapter-pg win on overlap).
+COPY --from=build /prisma-cli/node_modules /app/node_modules
 
 # Copy built application
 COPY --from=build /app/.next/standalone /app

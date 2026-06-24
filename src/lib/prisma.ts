@@ -9,7 +9,17 @@ declare global {
 }
 
 // Prisma 7 connects through a driver adapter instead of a schema datasource URL.
-const adapter = new PrismaPg({ connectionString: process.env.DATABASE_URL });
+// Pool options harden the connection against Fly's networking: keepAlive stops
+// the flycast proxy from silently reaping idle TCP connections (the source of the
+// "Error in PostgreSQL connection: Closed" noise), while the bounded pool and
+// timeouts cap connections per app machine and fail fast when the DB is unreachable.
+const adapter = new PrismaPg({
+    connectionString: process.env.DATABASE_URL,
+    max: 5,
+    idleTimeoutMillis: 30_000,
+    connectionTimeoutMillis: 10_000,
+    keepAlive: true,
+});
 
 // Use a single PrismaClient instance in development and production environments.
 const prisma = global.prisma || new PrismaClient({

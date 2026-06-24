@@ -1,5 +1,5 @@
 {
-  "openapi": "3.0.0",
+  "openapi": "3.1.0",
   "info": {
     "title": "jq Playground API",
     "version": "1.0.0",
@@ -210,14 +210,22 @@
         "type": "object",
         "properties": {
           "json": {
-            "type": "string",
-            "nullable": true,
+            "type": [
+              "string",
+              "null"
+            ],
             "description": "JSON input to process"
           },
           "http": {
-            "$ref": "#/components/schemas/HttpRequestSchema",
-            "description": "HTTP request to fetch JSON from",
-            "nullable": true
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/HttpRequestSchema"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "HTTP request to fetch JSON from"
           },
           "query": {
             "type": "string",
@@ -225,9 +233,15 @@
             "description": "jq query to execute"
           },
           "options": {
-            "$ref": "#/components/schemas/Options",
-            "description": "jq command-line options",
-            "nullable": true
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/Options"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "jq command-line options"
           }
         },
         "required": [
@@ -273,6 +287,48 @@
         "required": [
           "slug"
         ]
+      },
+      "SnippetShape": {
+        "type": "object",
+        "properties": {
+          "json": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "JSON input to process"
+          },
+          "http": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/HttpRequestSchema"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "HTTP request to fetch JSON from"
+          },
+          "query": {
+            "type": "string",
+            "minLength": 1,
+            "description": "jq query to execute"
+          },
+          "options": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/Options"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "jq command-line options"
+          }
+        },
+        "required": [
+          "query"
+        ]
       }
     },
     "responses": {
@@ -285,7 +341,9 @@
               "properties": {
                 "error": {
                   "type": "string",
-                  "example": "Invalid request parameters"
+                  "examples": [
+                    "Invalid request parameters"
+                  ]
                 }
               }
             }
@@ -301,7 +359,9 @@
               "properties": {
                 "error": {
                   "type": "string",
-                  "example": "Authentication required"
+                  "examples": [
+                    "Authentication required"
+                  ]
                 }
               }
             }
@@ -317,7 +377,9 @@
               "properties": {
                 "error": {
                   "type": "string",
-                  "example": "Access denied"
+                  "examples": [
+                    "Access denied"
+                  ]
                 }
               }
             }
@@ -333,7 +395,9 @@
               "properties": {
                 "error": {
                   "type": "string",
-                  "example": "Resource not found"
+                  "examples": [
+                    "Resource not found"
+                  ]
                 }
               }
             }
@@ -349,7 +413,9 @@
               "properties": {
                 "error": {
                   "type": "string",
-                  "example": "Resource already exists"
+                  "examples": [
+                    "Resource already exists"
+                  ]
                 }
               }
             }
@@ -365,7 +431,9 @@
               "properties": {
                 "error": {
                   "type": "string",
-                  "example": "An unexpected error occurred"
+                  "examples": [
+                    "An unexpected error occurred"
+                  ]
                 }
               }
             }

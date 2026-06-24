@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server';
 import { GetSnippet } from '@/lib/prisma';
-import { Snippet, SnippetType } from '@/schemas';
+import { SnippetRead, SnippetType } from '@/schemas';
 import { SnippetError } from '@/schemas/api';
 import { ZodError } from 'zod';
 import * as Sentry from '@sentry/node';
@@ -30,7 +30,7 @@ export async function GET(_: Request, { params }: PageProps): Promise<NextRespon
             return NextResponse.json({ error: 'Snippet not found' }, { status: 404 });
         }
 
-        const resp = Snippet.parse(snippet);
+        const resp = SnippetRead.parse(snippet);
         return NextResponse.json(resp);
     } catch (error: any) {
         console.error(`Failed to load snippet: ${error.message}`);

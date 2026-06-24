@@ -215,9 +215,13 @@
             "description": "JSON input to process"
           },
           "http": {
-            "$ref": "#/components/schemas/HttpRequestSchema",
             "description": "HTTP request to fetch JSON from",
-            "nullable": true
+            "nullable": true,
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/HttpRequestSchema"
+              }
+            ]
           },
           "query": {
             "type": "string",
@@ -225,9 +229,13 @@
             "description": "jq query to execute"
           },
           "options": {
-            "$ref": "#/components/schemas/Options",
             "description": "jq command-line options",
-            "nullable": true
+            "nullable": true,
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/Options"
+              }
+            ]
           }
         },
         "required": [

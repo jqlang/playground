@@ -1,9 +1,15 @@
 import { ZodError } from 'zod';
 import * as Sentry from '@sentry/nextjs';
 import { JqRequestSchema, JqError } from '@/schemas/api';
-import { runJqWithTimeout, TimeoutError } from '@/workers/server';
+import { runJqWithTimeout, TimeoutError, PoolOverloadError } from '@/workers/server';
+import { rateLimit } from '@/lib/rate-limit';
 
 const TIMEOUT_MS = 5000; // 5 seconds
+
+// Per-IP rate limit for the public, unauthenticated jq API. Bounds how fast a
+// single client can push work onto the jq worker pool (memory/CPU protection).
+const RATE_LIMIT = 60;          // requests
+const RATE_WINDOW_MS = 60_000;  // per minute
 
 const CORS_HEADERS = {
     'Access-Control-Allow-Origin': '*',
@@ -25,6 +31,24 @@ function textResponse(text: string, status: number, headers?: Record<string, str
     });
 }
 
+function clientKey(request: Request): string {
+    const headers = request.headers;
+    // Fly sets fly-client-ip; fall back to the first x-forwarded-for hop.
+    return (
+        headers.get('fly-client-ip') ||
+        headers.get('x-forwarded-for')?.split(',')[0].trim() ||
+        'unknown'
+    );
+}
+
+// Returns a 429 Response if the caller is over the rate limit, else null.
+function rateLimited(request: Request): Response | null {
+    const { allowed, retryAfterSec } = rateLimit(`jq:${clientKey(request)}`, RATE_LIMIT, RATE_WINDOW_MS);
+    if (allowed) return null;
+    const error: JqError = { error: 'Rate limit exceeded. Please retry shortly.' };
+    return jsonResponse(error, 429, { 'Retry-After': String(retryAfterSec) });
+}
+
 function handleError(e: unknown): Response {
     if (e instanceof ZodError) {
         const error: JqError = { error: e.issues };
@@ -34,6 +58,11 @@ function handleError(e: unknown): Response {
     if (e instanceof TimeoutError) {
         const error: JqError = { error: e.message };
         return jsonResponse(error, 408);
+    }
+
+    if (e instanceof PoolOverloadError) {
+        const error: JqError = { error: 'Server is busy. Please retry shortly.' };
+        return jsonResponse(error, 429, { 'Retry-After': '1' });
     }
 
     if (e instanceof SyntaxError) {
@@ -68,6 +97,9 @@ export async function OPTIONS() {
  * @response 500:JqErrorSchema
  */
 export async function GET(request: Request) {
+    const limited = rateLimited(request);
+    if (limited) return limited;
+
     try {
         const { searchParams } = new URL(request.url);
         const json = searchParams.get('json');
@@ -114,6 +146,9 @@ export async function GET(request: Request) {
  * @response 500:JqErrorSchema
  */
 export async function POST(request: Request) {
+    const limited = rateLimited(request);
+    if (limited) return limited;
+
     try {
         const body = await request.json();
         const { json, query, options } = JqRequestSchema.parse(body);

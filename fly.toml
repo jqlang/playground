@@ -1,6 +1,11 @@
 app = 'jqplay-next'
 primary_region = 'iad'
 
+# OOM cushion for the 512MB machine: lets the kernel page out cold memory under
+# a transient spike (e.g. concurrent server-side jq) instead of OOM-killing the
+# Next.js server. A backstop, not a substitute for the jq pool limits.
+swap_size_mb = 512
+
 [build]
 dockerfile = "Dockerfile"
 

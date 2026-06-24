@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { Snippet, Options, Option } from './snippet';
+import { Snippet, SnippetRead, Options, Option } from './snippet';
 
 describe('Option schema', () => {
     it('accepts valid jq options', () => {
@@ -100,6 +100,16 @@ describe('Snippet schema', () => {
                 query: '.',
             })).toThrow('Either JSON or HTTP must be provided');
         });
+
+        it('accepts a -n (null input) snippet with no json or http', () => {
+            // jq -n ignores input entirely, so no json/http source is required.
+            const result = Snippet.parse({
+                query: '1 + 1',
+                options: ['-n'],
+            });
+            expect(result.options).toEqual(['-n']);
+            expect(result.query).toBe('1 + 1');
+        });
     });
 
     describe('query validation', () => {
@@ -118,5 +128,23 @@ describe('Snippet schema', () => {
             });
             expect(result.query).toBe(longQuery);
         });
+    });
+});
+
+describe('SnippetRead schema (permissive read path for legacy rows)', () => {
+    // Stored snippets are trusted data and may predate the current write-time
+    // invariant (e.g. an empty-json row with no http source). SnippetRead loads
+    // them instead of 422-ing on read, while still enforcing field types/sizes.
+    it('accepts a legacy row that the strict Snippet schema rejects', () => {
+        const legacy = { json: '', http: null, query: '.' };
+        expect(() => Snippet.parse(legacy)).toThrow('Either JSON or HTTP must be provided');
+        const result = SnippetRead.parse(legacy);
+        expect(result.json).toBe('');
+        expect(result.query).toBe('.');
+    });
+
+    it('still enforces field-level validation while accepting normal rows', () => {
+        expect(SnippetRead.parse({ json: '{"a":1}', query: '.a' }).query).toBe('.a');
+        expect(() => SnippetRead.parse({ json: '{}', query: '' })).toThrow();
     });
 });

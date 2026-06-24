@@ -1,1 +1,1 @@
-export { runJqWithTimeout, TimeoutError } from './pool';
+export { runJqWithTimeout, TimeoutError, PoolOverloadError } from './pool';

@@ -3,25 +3,18 @@ import { withSentryConfig } from '@sentry/nextjs';
 /** @type {import('next').NextConfig} */
 const nextConfig = {
     output: "standalone",
-    // Include packages that are dynamically loaded by piscina workers
+    // jq-wasm and piscina are loaded at runtime by the jq worker pool, not bundled.
     serverExternalPackages: ['jq-wasm', 'piscina'],
+    // Piscina loads worker.cjs from disk via a path the file tracer can't follow, so
+    // force-include it AND the jq-wasm package: jq-wasm v2 reads its wasm from a
+    // separate dist/build/jq.wasm at runtime, which the tracer won't copy on its own
+    // for an externalized package. The key must be the normalized route path
+    // (/api/jq) — Next matches these globs against routes, not the app-dir file path;
+    // the previous '/app/api/jq/route' key matched nothing, so the wasm never shipped.
     outputFileTracingIncludes: {
-        '/app/api/jq/route': ['./src/workers/server/worker.cjs', './node_modules/jq-wasm/**/*'],
+        '/api/jq': ['./src/workers/server/worker.cjs', './node_modules/jq-wasm/**/*'],
     },
-    webpack: (config, { isServer, webpack }) => {
-        config.resolve.fallback = {
-            fs: false,
-            path: false,
-            crypto: false
-        };
-        // jq-wasm 1.2 imports Node built-ins via the `node:` scheme; rewrite them
-        // to bare specifiers so the browser build uses the fallbacks above instead
-        // of failing on the unhandled `node:` scheme.
-        config.plugins.push(
-            new webpack.NormalModuleReplacementPlugin(/^node:(fs|path|crypto)$/, (resource) => {
-                resource.request = resource.request.replace(/^node:/, '');
-            })
-        );
+    webpack: (config, { isServer }) => {
         // Don't bundle piscina - it needs to load workers at runtime
         if (isServer) {
             config.externals = config.externals || [];

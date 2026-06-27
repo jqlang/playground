@@ -8,20 +8,7 @@ const nextConfig = {
     outputFileTracingIncludes: {
         '/app/api/jq/route': ['./src/workers/server/worker.cjs', './node_modules/jq-wasm/**/*'],
     },
-    webpack: (config, { isServer, webpack }) => {
-        config.resolve.fallback = {
-            fs: false,
-            path: false,
-            crypto: false
-        };
-        // jq-wasm 1.2 imports Node built-ins via the `node:` scheme; rewrite them
-        // to bare specifiers so the browser build uses the fallbacks above instead
-        // of failing on the unhandled `node:` scheme.
-        config.plugins.push(
-            new webpack.NormalModuleReplacementPlugin(/^node:(fs|path|crypto)$/, (resource) => {
-                resource.request = resource.request.replace(/^node:/, '');
-            })
-        );
+    webpack: (config, { isServer }) => {
         // Don't bundle piscina - it needs to load workers at runtime
         if (isServer) {
             config.externals = config.externals || [];

@@ -5,14 +5,20 @@ const nextConfig = {
     output: "standalone",
     // jq-wasm and piscina are loaded at runtime by the jq worker pool, not bundled.
     serverExternalPackages: ['jq-wasm', 'piscina'],
-    // Piscina loads worker.cjs from disk via a path the file tracer can't follow, so
-    // force-include it AND the jq-wasm package: jq-wasm v2 reads its wasm from a
-    // separate dist/build/jq.wasm at runtime, which the tracer won't copy on its own
-    // for an externalized package. The key must be the normalized route path
-    // (/api/jq) — Next matches these globs against routes, not the app-dir file path;
-    // the previous '/app/api/jq/route' key matched nothing, so the wasm never shipped.
+    // Piscina loads worker.cjs from disk via a path the file tracer can't follow, and
+    // Next copies these globs verbatim — it does NOT trace the included file's own
+    // require() graph. So /api/jq must list worker.cjs AND the worker's jq-wasm
+    // runtime closure explicitly: package.json (exports-map resolution), the CJS
+    // entry, and the wasm binary. File-by-file rather than jq-wasm/** so the ~1.3MB
+    // inline builds stay out of the image. The key must be the normalized route
+    // path (/api/jq) — Next matches these globs against routes, not the app-dir path.
     outputFileTracingIncludes: {
-        '/api/jq': ['./src/workers/server/worker.cjs', './node_modules/jq-wasm/**/*'],
+        '/api/jq': [
+            './src/workers/server/worker.cjs',
+            './node_modules/jq-wasm/package.json',
+            './node_modules/jq-wasm/dist/index.cjs',
+            './node_modules/jq-wasm/dist/build/jq.wasm',
+        ],
     },
     webpack: (config, { isServer }) => {
         // Don't bundle piscina - it needs to load workers at runtime
@@ -20,6 +26,14 @@ const nextConfig = {
             config.externals = config.externals || [];
             config.externals.push('piscina');
         }
+        // Emit jq-wasm's jq.wasm as a hashed asset so the browser web worker can
+        // import its URL and hand it to loadJq({ wasmURL }) — reliable across the
+        // nested-worker-chunk boundary that new URL(import.meta.url) is not.
+        config.module.rules.push({
+            test: /jq-wasm[\\/].*\.wasm$/,
+            type: 'asset/resource',
+            generator: { filename: 'static/wasm/[hash][ext]' },
+        });
         return config;
     },
 };

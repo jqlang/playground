@@ -21,7 +21,7 @@
     "@monaco-editor/react": "^4.7.0",
     "@mui/icons-material": "^9.1.1",
     "@mui/lab": "9.0.0-beta.5",
-    "@mui/material": "^9.1.1",
+    "@mui/material": "^9.1.2",
     "@prisma/adapter-pg": "^7.8.0",
     "@prisma/client": "^7.8.0",
     "@scalar/api-reference-react": "^0.9.49",

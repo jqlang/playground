@@ -5,13 +5,20 @@ const nextConfig = {
     output: "standalone",
     // jq-wasm and piscina are loaded at runtime by the jq worker pool, not bundled.
     serverExternalPackages: ['jq-wasm', 'piscina'],
-    // Piscina loads worker.cjs from disk via a path the file tracer can't follow, so
-    // force-include it. jq-wasm is NO LONGER force-included: with v3 the worker
-    // resolves the wasm explicitly via require.resolve('jq-wasm/jq.wasm'), which puts
-    // dist/build/jq.wasm into the traced graph. The key must be the normalized route
+    // Piscina loads worker.cjs from disk via a path the file tracer can't follow, and
+    // Next copies these globs verbatim — it does NOT trace the included file's own
+    // require() graph. So /api/jq must list worker.cjs AND the worker's jq-wasm
+    // runtime closure explicitly: package.json (exports-map resolution), the CJS
+    // entry, and the wasm binary. File-by-file rather than jq-wasm/** so the ~1.3MB
+    // inline builds stay out of the image. The key must be the normalized route
     // path (/api/jq) — Next matches these globs against routes, not the app-dir path.
     outputFileTracingIncludes: {
-        '/api/jq': ['./src/workers/server/worker.cjs'],
+        '/api/jq': [
+            './src/workers/server/worker.cjs',
+            './node_modules/jq-wasm/package.json',
+            './node_modules/jq-wasm/dist/index.cjs',
+            './node_modules/jq-wasm/dist/build/jq.wasm',
+        ],
     },
     webpack: (config, { isServer }) => {
         // Don't bundle piscina - it needs to load workers at runtime

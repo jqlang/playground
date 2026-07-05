@@ -1,7 +1,8 @@
 // Per-worker-thread jq instance: load once, then synchronous raw() per task.
-// loadJq with an explicit require.resolve puts jq.wasm into the import graph that
-// Next's standalone file tracer follows, so no jq-wasm outputFileTracingIncludes
-// glob is needed (v2 had to force-include the whole package).
+// require.resolve finds jq.wasm wherever jq-wasm resolves at runtime; the files
+// this worker needs in the standalone build are force-included per-file via
+// outputFileTracingIncludes['/api/jq'] in next.config.mjs — Next does not trace
+// through files pulled in by those globs, so the closure is listed there.
 const { loadJq } = require('jq-wasm');
 const { readFileSync } = require('node:fs');
 

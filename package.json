@@ -26,7 +26,7 @@
     "@prisma/client": "^7.8.0",
     "@scalar/api-reference-react": "^0.9.49",
     "@sentry/nextjs": "^10.59.0",
-    "@sentry/node": "^10.59.0",
+    "@sentry/node": "^10.63.0",
     "ajv": "^8.20.0",
     "jq-wasm": "^3.0.0-jq-1.8.2",
     "next": "^16.2.9",

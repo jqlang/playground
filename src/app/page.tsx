@@ -42,7 +42,8 @@ export default async function Page({ searchParams }: PageProps): Promise<JSX.Ele
         };
 
         console.error(`Failed to parse snippet: ${error.message}`);
-        Sentry.captureException(error, { extra: { params } });
+        // Param names only: the values are the user's JSON and query.
+        Sentry.captureException(error, { extra: { paramKeys: Object.keys(params) } });
     }
 
     return (

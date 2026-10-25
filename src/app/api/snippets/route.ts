@@ -25,7 +25,8 @@ export async function POST(req: Request): Promise<NextResponse<SnippetCreateResp
     } catch (error: unknown) {
         // Log the error and capture it in Sentry
         console.error(`Failed to save snippet: ${error instanceof Error ? error.message : String(error)}`);
-        Sentry.captureException(error, { extra: { body: req.body } });
+        // No request body: it's the user's JSON.
+        Sentry.captureException(error);
 
         // Handle Zod validation errors
         if (error instanceof ZodError) {

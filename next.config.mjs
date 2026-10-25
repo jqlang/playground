@@ -1,4 +1,4 @@
-import { withSentryConfig } from '@sentry/nextjs';
+import { withSentryConfig } from '@sentry/nextjs/config';
 
 /** @type {import('next').NextConfig} */
 const nextConfig = {
@@ -60,8 +60,12 @@ export default withSentryConfig(nextConfig, {
     // side errors will fail.
     tunnelRoute: "/monitoring",
 
-    // Hides source maps from generated client bundles
-    hideSourceMaps: true,
+    // Keep source maps out of the public client bundle: the SDK generates client maps as
+    // hidden-source-map (no sourceMappingURL comment), and this deletes them after upload.
+    // (Replaces hideSourceMaps, which neither v10 nor v11 reads.)
+    sourcemaps: {
+        deleteSourcemapsAfterUpload: true,
+    },
 
     // Bundler-specific options were moved under `webpack` in @sentry/nextjs v10
     webpack: {

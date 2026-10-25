@@ -13,6 +13,23 @@ Sentry.init({
   // Setting this option to true will print useful information to the console while you're setting up Sentry.
   debug: false,
 
+  // v11 collects cookies, user info and fetch/XHR bodies (users' JSON) by default; keep v10's restrictive baseline.
+  // https://docs.sentry.io/platforms/javascript/configuration/options/#dataCollection
+  dataCollection: {
+    userInfo: false,
+    cookies: false,
+    httpHeaders: {
+      request: { deny: ['forwarded', '-ip', 'remote-', 'via', '-user'] },
+      response: { deny: ['forwarded', '-ip', 'remote-', 'via', '-user'] },
+    },
+    httpBodies: [],
+    urlQueryParams: { deny: ['forwarded', '-ip', 'remote-', 'via', '-user'] },
+    genAI: { inputs: false, outputs: false },
+    databaseQueryData: false,
+    queues: false,
+    graphQL: { document: false, variables: false },
+  },
+
   replaysOnErrorSampleRate: 0.05,
 
   // This sets the sample rate to be 10%. You may want this to be 100% while

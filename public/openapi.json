@@ -67,6 +67,7 @@
           },
           "body": {
             "type": "string",
+            "maxLength": 1048576,
             "description": "HTTP request body"
           }
         },
@@ -84,7 +85,7 @@
         "type": "object",
         "properties": {
           "error": {
-            "oneOf": [
+            "anyOf": [
               {
                 "type": "string"
               },
@@ -129,11 +130,13 @@
         "properties": {
           "json": {
             "type": "string",
+            "maxLength": 1048576,
             "description": "JSON input to process",
             "example": "{\"name\": \"jq\", \"version\": \"1.7\"}"
           },
           "query": {
             "type": "string",
+            "maxLength": 262144,
             "description": "jq query to execute",
             "example": ".name"
           },
@@ -148,27 +151,6 @@
               "-r",
               "-c"
             ]
-          }
-        },
-        "required": [
-          "json",
-          "query"
-        ]
-      },
-      "JqRequestSchemaOutput": {
-        "type": "object",
-        "properties": {
-          "json": {
-            "type": "string",
-            "description": "JSON input to process"
-          },
-          "query": {
-            "type": "string",
-            "description": "jq query to execute"
-          },
-          "options": {
-            "type": "object",
-            "description": "jq command-line options"
           }
         },
         "required": [
@@ -214,6 +196,7 @@
               "string",
               "null"
             ],
+            "maxLength": 1048576,
             "description": "JSON input to process"
           },
           "http": {
@@ -296,6 +279,7 @@
               "string",
               "null"
             ],
+            "maxLength": 1048576,
             "description": "JSON input to process"
           },
           "http": {
@@ -490,7 +474,8 @@
               "description": "JSON input to process (URL-encoded)",
               "example": "{\"name\": \"jq\", \"version\": \"1.7\"}"
             },
-            "description": "JSON input to process (URL-encoded)"
+            "description": "JSON input to process (URL-encoded)",
+            "example": "{\"name\": \"jq\", \"version\": \"1.7\"}"
           },
           {
             "in": "query",
@@ -501,7 +486,8 @@
               "description": "jq query to execute (URL-encoded if it contains special characters like |, +, &)",
               "example": ".name"
             },
-            "description": "jq query to execute (URL-encoded if it contains special characters like |, +, &)"
+            "description": "jq query to execute (URL-encoded if it contains special characters like |, +, &)",
+            "example": ".name"
           },
           {
             "in": "query",
@@ -512,7 +498,8 @@
               "description": "Comma-separated jq options: -c (compact), -n (null input), -R (raw input), -r (raw output), -s (slurp), -S (sort keys)",
               "example": "-r,-c"
             },
-            "description": "Comma-separated jq options: -c (compact), -n (null input), -R (raw input), -r (raw output), -s (slurp), -S (sort keys)"
+            "description": "Comma-separated jq options: -c (compact), -n (null input), -R (raw input), -r (raw output), -s (slurp), -S (sort keys)",
+            "example": "-r,-c"
           }
         ],
         "responses": {
@@ -639,6 +626,26 @@
                 }
               }
             }
+          }
+        }
+      },
+      "options": {
+        "operationId": "options-jq",
+        "summary": "Handle CORS preflight requests",
+        "description": "",
+        "tags": [
+          "Jq"
+        ],
+        "parameters": [],
+        "responses": {
+          "204": {
+            "description": "No Content"
+          },
+          "400": {
+            "$ref": "#/components/responses/400"
+          },
+          "500": {
+            "$ref": "#/components/responses/500"
           }
         }
       }

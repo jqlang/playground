@@ -3,9 +3,8 @@ import * as Sentry from "@sentry/nextjs";
 Sentry.init({
   dsn: process.env.NEXT_PUBLIC_SENTRY_DSN || "",
 
-  // Adds request headers and IP for users, for more info visit:
-  // https://docs.sentry.io/platforms/javascript/guides/nextjs/configuration/options/#sendDefaultPii
-  sendDefaultPii: true,
+  // Request headers, IP and bodies are collected by default in v11 (equivalent to v10's sendDefaultPii: true), see:
+  // https://docs.sentry.io/platforms/javascript/configuration/options/#dataCollection
 
   // Adjust this value in production, or use tracesSampler for greater control
   tracesSampleRate: 0.05,

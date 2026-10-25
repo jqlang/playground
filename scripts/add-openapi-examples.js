@@ -32,6 +32,8 @@ function addExamples() {
       if (param.name && GET_EXAMPLES[param.name]) {
         param.schema = param.schema || {};
         param.schema.example = GET_EXAMPLES[param.name];
+        // next-openapi-gen >=1.9 sets a placeholder param-level example ("example") that would override the schema one
+        param.example = GET_EXAMPLES[param.name];
       }
     }
   }
